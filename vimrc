@@ -223,11 +223,31 @@ nnoremap <Leader>ag :Ag<space>
 " <Leader>ut: Undo Tree
 nnoremap <Leader>ut :GundoToggle<CR>
 
+" <Leader>ge: Git edit
+nnoremap <Leader>ge :Gedit<CR>
+
 " <Leader>gb: Git blame
 nnoremap <Leader>gb :Gblame<CR>
 
 " <Leader>gb: Git diff
 nnoremap <Leader>gd :Gdiff<CR>
+
+" <Leader>gs: Git status
+nnoremap <Leader>gs :Gstatus<CR>
+
+" <Leader>gr: View git repository
+nnoremap <Leader>gr :Gitv<CR>
+
+" <Leader>gl: Git log
+nnoremap <Leader>gl :Gitv!<CR>
+vnoremap <Leader>gl :Gitv!<CR>
+
+nnoremap <silent> <Leader>bf :call fzf#run({
+\   'source':  reverse(<sid>buflist()),
+\   'sink':    function('<sid>bufopen'),
+\   'options': '+m',
+\   'down':    len(<sid>buflist()) + 2
+\ })<CR>
 
 "===============================================================================
 " Non-leader Key Mappings
@@ -244,6 +264,14 @@ inoremap <C-l> <C-o>a
 inoremap <C-j> <C-o>j
 inoremap <C-k> <C-o>k
 
+" gt: Goto line with fuzzy match
+nnoremap <silent> gt :call fzf#run({
+\   'source':  <sid>buffer_lines(),
+\   'sink':    function('<sid>line_handler'),
+\   'options': '--extended --nth=3..',
+\   'down':    '60%'
+\ })<CR>
+
 " Jump through Quickfix results
 nmap <silent> ]q :cnext<CR>
 nmap <silent> [q :cprev<CR>
@@ -251,6 +279,33 @@ nmap <silent> [q :cprev<CR>
 "===============================================================================
 " Functions
 "===============================================================================
+
+function! s:buflist()
+  redir => ls
+  silent ls
+  redir END
+  return split(ls, '\n')
+endfunction
+
+function! s:bufopen(e)
+  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
+endfunction
+
+function! s:line_handler(l)
+  let keys = split(a:l, ':\t')
+  exec 'buf ' . keys[0]
+  exec keys[1]
+  normal! ^zz
+endfunction
+
+function! s:buffer_lines()
+  let res = []
+  for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
+    call extend(res, map(
+          \ getbufline(b,0,"$"), 'b . ":\t" . (v:key + 1) . ":\t" . v:val '))
+  endfor
+  return res
+endfunction
 
 "===============================================================================
 " Autocommands
@@ -271,13 +326,17 @@ augroup auglobal
   " When editing a file, always jump to the last known cursor position.
   " Don't do it for commit messages, when the position is invalid, or when
   " inside an event handler (happens when dropping a file on gvim).
-  autocmd BufReadPost * if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
+  autocmd BufReadPost * if &ft != 'gitcommit'
+        \ && line("'\"") > 0 && line("'\"") <= line("$")
+        \ | exe "normal g`\"" | endif
 
   " Automatically open quickfix window after grepping
   autocmd QuickFixCmdPost *grep* cwindow
 
   " Close vim if the only window open is NERDTree
-  autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+  autocmd BufEnter * if (winnr("$") == 1
+        \ && exists("b:NERDTreeType") && b:NERDTreeType == "primary")
+        \ | q | endif
 
   " Initialize Airline sections
   if exists('airline')
@@ -312,6 +371,9 @@ hi link EasyMotionShade  Comment
 " EasyAlign
 vmap <Enter> <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+
+" Gitv
+let g:Gitv_TruncateCommitSubjects = 1
 
 " Airline
 if !exists('g:airline_symbols')
@@ -367,4 +429,3 @@ let g:airline_mode_map = {
   \ 'S'  : 'S',
   \ '' : 'S',
   \ }
-
