@@ -1,0 +1,8 @@
+[user]
+  name = Edgar Lee
+  email = edgarhinshunlee@gmail.com
+[core]
+  editor = vim
+  excludesfile = /home/.gitignore
+[push]
+  default = simple
