@@ -1,0 +1,44 @@
+# ~/.tmuxinator/brackety.yml
+
+name: brackety
+root: ~/
+
+# Optional tmux socket
+# socket_name: foo
+
+# Runs before everything. Use it to start daemons etc.
+# pre: sudo /etc/rc.d/mysqld start
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell 2.0.0-p247
+
+# Pass command line options to tmux. Useful for specifying a different tmux.conf.
+# tmux_options: -f ~/.tmux.mac.conf
+
+# Change the command to call tmux.  This can be used by derivatives/wrappers like byobu.
+# tmux_command: byobu
+
+# Specifies (by name or index) which window will be selected on project startup. If not set, the first window is used.
+# startup_window: logs
+
+windows:
+  - logs:
+      layout: even-horizontal
+      panes:
+        - cd ~/codes/brackety && bin/rails s
+        - cd ~/codes/brackety-ember && ember serve
+  - api:
+      root: ~/codes/brackety
+      panes:
+        - e
+  - ember:
+      root: ~/codes/brackety-ember
+      panes:
+        - e
+  - shell:
+      layout: 72ca,204x61,0,0{102x61,0,0[102x30,0,0,0,102x30,0,31,2],101x61,103,0,1}
+      panes:
+        - cd ~/codes/brackety && git status
+        - cd ~/codes/brackety-ember && git status
+        - cd ~/codes/brackety && bin/rails c
+  - irc: echo "Hello world"
