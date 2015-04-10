@@ -17,17 +17,18 @@ Plug 'hinshun/vim-tomorrow-theme'
 Plug 'bling/vim-airline'
 
 " Edit
-Plug 'tpope/vim-repeat'                       " . repeat command for plugins
-Plug 'tpope/vim-surround'                     " surround modifier for parentheses, brackets, etc
-Plug 'tpope/vim-endwise'                      " end certain structures automatically depending on language
-Plug 'tpope/vim-commentary'                   " commenting
-Plug 'lokaltog/vim-easymotion'                " better motion
-Plug 'osyo-manga/vim-over'                    " preview regex
-Plug 'junegunn/vim-easy-align'                " better alignment
-Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' } " undo tree
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-commentary'
+Plug 'lokaltog/vim-easymotion'
+Plug 'osyo-manga/vim-over'
+Plug 'junegunn/vim-easy-align'
+Plug 'junegunn/vim-peekaboo'
+Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' }
 
 " Browsing
-Plug 'junegunn/fzf', { 'do': 'yes \| ./install' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
 Plug 'rking/ag.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'bogado/file-line'
@@ -57,7 +58,7 @@ endif
 " Set default shell
 set shell=/bin/zsh
 
-" Disable splash screen
+" Avoid hit-enter prompts & splash screen
 set shortmess+=I
 
 " Enable 256 colors
@@ -69,7 +70,7 @@ set laststatus=2
 " Enable unicode
 set encoding=utf-8
 
-" Initialize colorscheme if loaded
+" Init colorscheme
 silent! colorscheme Tomorrow-Night
 
 " Turn on line number
@@ -79,12 +80,12 @@ set number
 set splitbelow
 set splitright
 
-" Turn off sound
+" Turn off sound & alerts
 set vb
 set t_vb=
 
 " Lower the delay of escaping out of other modes
-set timeout timeoutlen=200 ttimeoutlen=1
+set timeoutlen=200
 
 " Turn backup off
 set nobackup
@@ -98,17 +99,15 @@ set cursorline
 set autoread
 
 " Minimal number of screen lines to keep above and below the cursor
-set scrolloff=10
+set scrolloff=5
 
 " Min width of the number column to the left
 set numberwidth=1
 
-" Open all folds initially
+" Fold settings
 set foldmethod=indent " fold by indent level
 set nofoldenable      " dont fold by default
-
-" Set level of folding
-set foldlevel=1 " start folding for level
+set foldlevelstart=99 " start folding for level
 
 " Allow changing buffer without saving it first
 set hidden
@@ -137,26 +136,61 @@ set tabstop=2     " width of tab
 set shiftwidth=2  " shifting >>, <<, ==
 set softtabstop=2 " tab key <TAB>, <BS>
 set expandtab     " always use softtabstop for <TAB>
-set smartindent
+set smarttab
 
-" Text display settings
+" Indent options
 set autoindent
+set smartindent
 set linebreak
-" set textwidth=80
 
-" Wild menu settings
+" 80 chars/line
+set textwidth=0
+if exists('&colorcolumn')
+  set colorcolumn=80
+endif
+
+" Don't redraw when not needed
+set lazyredraw
+
+" Show keystrokes in buffer
+set showcmd
+
+" Highlight unwanted characters
+set list
+set listchars=tab:\|\ ,
+
+" Add no extra spaces when joining lines ending with punctuation
+set nojoinspaces
+
+" Align diffs and always vertical
+set diffopt=filler,vertical
+
+" Format to recognize for :grep
+set grepformat=%f:%l:%c:%m,%f:%l:%m
+
+" Insert mode completion
+set completeopt=menuone,preview,longest
+
+" Enable wild menu
 set wildmode=list:longest,full
-set wildmenu                "turn on wild menu
-set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
-set wildignore+=*DS_Store*
-set wildignore+=vendor/rails/**
-set wildignore+=vendor/cache/**
-set wildignore+=*.gem
-set wildignore+=log/**
-set wildignore+=tmp/**
-set wildignore+=*.png,*.jpg,*.gif
-set wildignore+=*.so,*.swp,*.zip,*/.Trash/**,*.pdf,*.dmg,*/Library/**,*/.rbenv/**
-set wildignore+=*/.nx/**,*.app
+set wildmenu
+
+" Keep cursor on same column
+set nostartofline
+
+" Enable mouse
+set ttymouse=xterm2
+set mouse=a
+
+if has('patch-7.3.541')
+  set formatoptions+=j
+endif
+
+if has('patch-7.4.338')
+  let &showbreak = '↳ '
+  set breakindent
+  set breakindentopt=sbr
+endif
 
 "===============================================================================
 " Leader Key Mappings
@@ -170,9 +204,6 @@ let g:maplocalleader = " "
 
 " <Leader><Leader>: Open files
 nnoremap <Leader><Leader> :FZF -m<CR>
-
-" <Leader>y: Copy to system clipboard
-xnoremap <Leader>y "*y
 
 " <Leader>/: Clear highlighted searches
 nnoremap <Leader>/ :nohlsearch<cr>
@@ -202,8 +233,16 @@ nnoremap <Leader>gd :Gdiff<CR>
 " Non-leader Key Mappings
 "===============================================================================
 
-" <C-c>: <ESC>
-inoremap <C-c> <esc>
+" jk: <ESC>
+inoremap jk <Esc>
+xnoremap jk <Esc>
+cnoremap jk <C-c>
+
+" Movement in INSERT mode
+inoremap <C-h> <C-o>h
+inoremap <C-l> <C-o>a
+inoremap <C-j> <C-o>j
+inoremap <C-k> <C-o>k
 
 " Jump through Quickfix results
 nmap <silent> ]q :cnext<CR>
