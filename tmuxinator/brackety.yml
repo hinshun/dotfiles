@@ -22,23 +22,15 @@ root: ~/
 # startup_window: logs
 
 windows:
-  - logs:
-      layout: even-horizontal
-      panes:
-        - cd ~/codes/brackety && bin/rails s
-        - cd ~/codes/brackety-ember && ember serve
-  - api:
-      root: ~/codes/brackety
-      panes:
-        - e
   - ember:
-      root: ~/codes/brackety-ember
+      layout: a6a5,204x58,0,0{125x58,0,0,0,78x58,126,0[78x29,126,0,1,78x28,126,30,2]}
       panes:
-        - e
-  - shell:
-      layout: 72ca,204x61,0,0{102x61,0,0[102x30,0,0,0,102x30,0,31,2],101x61,103,0,1}
+        - cd /brackety-ember && e +fzf
+        - cd ~/codes/brackety-docker && docker-compose run ember ember test --server
+        - cd ~/codes/brackety-docker && docker-compose logs ember
+  - web:
+      layout: 5206,204x58,0,0{122x58,0,0,3,81x58,123,0[81x29,123,0,7,81x28,123,30,8]}
       panes:
-        - cd ~/codes/brackety && git status
-        - cd ~/codes/brackety-ember && git status
-        - cd ~/codes/brackety && bin/rails c
-  - irc: echo "Hello world"
+        - ls
+        - cd ~/codes/brackety-docker && docker-compose run web rails c
+        - cd ~/codes/brackety-docker && docker-compose logs web
