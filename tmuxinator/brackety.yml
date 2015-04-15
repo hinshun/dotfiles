@@ -23,14 +23,16 @@ root: ~/
 
 windows:
   - ember:
-      layout: a6a5,204x58,0,0{125x58,0,0,0,78x58,126,0[78x29,126,0,1,78x28,126,30,2]}
+      layout: f5a0,204x58,0,0{122x58,0,0,0,81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,6]}
       panes:
         - cd /brackety-ember && vim
         - cd ~/codes/brackety-docker && docker-compose run --rm ember ember test --server
         - cd ~/codes/brackety-docker && docker-compose logs ember
+        - cd /brackety-ember && git status
   - web:
-      layout: 5206,204x58,0,0{122x58,0,0,3,81x58,123,0[81x29,123,0,7,81x28,123,30,8]}
+      layout: f5a0,204x58,0,0{122x58,0,0,0,81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,6]}
       panes:
         - cd /brackety && vim
         - cd ~/codes/brackety-docker && docker-compose run --rm web rails c
         - cd ~/codes/brackety-docker && docker-compose logs web
+        - cd /brackety && git status
