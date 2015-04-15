@@ -10,7 +10,7 @@ root: ~/
 # pre: sudo /etc/rc.d/mysqld start
 
 # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
-# pre_window: rbenv shell 2.0.0-p247
+pre_window: export FZF_DEFAULT_COMMAND='(git ls-tree -r --name-only HEAD || find * -name ".*" -prune -o -type f -print -o -type l -print) 2> /dev/null'
 
 # Pass command line options to tmux. Useful for specifying a different tmux.conf.
 # tmux_options: -f ~/.tmux.mac.conf
