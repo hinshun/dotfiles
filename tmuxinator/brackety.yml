@@ -23,15 +23,17 @@ pre_window: export FZF_DEFAULT_COMMAND='(git ls-tree -r --name-only HEAD || find
 
 windows:
   - ember:
-      layout: f5a0,204x58,0,0{122x58,0,0,0,81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,6]}
+      layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
       panes:
+        - cd ~/codes/brackety-docker && docker stats $(docker-compose ps ember | grep -v run | awk '{print $1}' | tail -n +3)
         - cd /brackety-ember && vim
         - cd ~/codes/brackety-docker && docker-compose run --rm ember ember test --server
         - cd ~/codes/brackety-docker && docker-compose logs ember
         - cd /brackety-ember && git status
   - web:
-      layout: f5a0,204x58,0,0{122x58,0,0,0,81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,6]}
+      layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
       panes:
+        - cd ~/codes/brackety-docker && docker stats $(docker-compose ps web | grep -v run | awk '{print $1}' | tail -n +3)
         - cd /brackety && vim
         - cd ~/codes/brackety-docker && docker-compose run --rm web rails c
         - cd ~/codes/brackety-docker && docker-compose logs web
