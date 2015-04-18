@@ -1,7 +1,7 @@
 # ~/.tmuxinator/brackety.yml
 
 name: brackety
-root: ~/
+root: ~/codes/brackety-docker
 
 # Optional tmux socket
 # socket_name: foo
@@ -10,10 +10,7 @@ root: ~/
 # pre: sudo /etc/rc.d/mysqld start
 
 # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
-pre_window: export FZF_DEFAULT_COMMAND='(git ls-tree -r --name-only HEAD || find * -name ".*" -prune -o -type f -print -o -type l -print) 2> /dev/null'
-  && alias ember='docker exec bracketydocker_ember_1 ember'
-  && alias rails='docker exec bracketydocker_web_1 rails'
-  && alias rake='docker exec bracketydocker_web_1 rake'
+# pre_window: echo 'hello world'
 
 # Pass command line options to tmux. Useful for specifying a different tmux.conf.
 # tmux_options: -f ~/.tmux.mac.conf
@@ -28,16 +25,25 @@ windows:
   - ember:
       layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
       panes:
-        - cd ~/codes/brackety-docker && docker stats $(docker-compose ps ember | grep -v run | awk '{print $1}' | tail -n +3)
-        - cd /brackety-ember && vim
-        - cd ~/codes/brackety-docker && docker-compose run --rm ember ember test --server
-        - cd ~/codes/brackety-docker && docker-compose logs ember
-        - cd /brackety-ember && git status
+        - docker stats $(docker-compose ps ember | grep -v run | awk '{print $1}' | tail -n +3)
+        - cd /ember
+          && export FZF_DEFAULT_COMMAND='(git ls-tree -r --name-only HEAD || find * -name ".*" -prune -o -type f -print -o -type l -print) 2> /dev/null'
+          && vim
+        - docker-compose run --rm ember ember test --server
+        - docker-compose logs ember
+        - cd /ember
+          && alias ember='docker exec bracketydocker_ember_1 ember'
+          && git status
   - web:
       layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
       panes:
-        - cd ~/codes/brackety-docker && docker stats $(docker-compose ps web | grep -v run | awk '{print $1}' | tail -n +3)
-        - cd /brackety && vim
-        - cd ~/codes/brackety-docker && docker-compose run --rm web rails c
-        - cd ~/codes/brackety-docker && docker-compose logs web
-        - cd /brackety && git status
+        - docker stats $(docker-compose ps web | grep -v run | awk '{print $1}' | tail -n +3)
+        - cd /web
+          && export FZF_DEFAULT_COMMAND='(git ls-tree -r --name-only HEAD || find * -name ".*" -prune -o -type f -print -o -type l -print) 2> /dev/null'
+          && vim
+        - docker-compose run --rm web rails c
+        - docker-compose logs web
+        - cd /web
+          && alias rails='docker exec bracketydocker_web_1 rails'
+          && alias rake='(cd ~/codes/brackety-docker && docker-compose run --rm web rake)'
+          && git status
