@@ -47,6 +47,7 @@ Plug 'tpope/vim-rails'
 Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
+Plug 'mustache/vim-mustache-handlebars'
 
 call plug#end()
 endif
