@@ -25,30 +25,30 @@ windows:
   - ember:
       layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
       panes:
-        - docker stats $(docker-compose ps ember | grep -v run | awk '{print $1}' | tail -n +3)
+        - docker stats $(compose ps ember | grep -v run | awk '{print $1}' | tail -n +3)
         - cd /ember
           && export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
-        - docker-compose run --rm ember ember test --server
-        - docker-compose logs ember
+        - compose run --rm ember ember test --server
+        - compose logs ember
         - cd /ember
-          && alias ember='docker-compose -f ~/codes/brackety-docker/development.yml run --rm ember ember'
-          && alias npm='docker-compose -f ~/codes/brackety-docker/development.yml run --rm ember npm'
-          && alias bower='docker-compose -f ~/codes/brackety-docker/development.yml run --rm ember bower'
+          && alias ember='compose -f ~/codes/brackety-docker/development.yml run --rm ember ember'
+          && alias npm='compose -f ~/codes/brackety-docker/development.yml run --rm ember npm'
+          && alias bower='compose -f ~/codes/brackety-docker/development.yml run --rm ember bower'
           && alias build='docker build --force-rm -t brackety/brackety-ember /ember'
           && git status
   - web:
       layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
       panes:
-        - docker stats $(docker-compose ps web | grep -v run | awk '{print $1}' | tail -n +3)
+        - docker stats $(compose ps web | grep -v run | awk '{print $1}' | tail -n +3)
         - cd /web
           && export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
-        - docker-compose -f ~/codes/brackety-docker/development.yml run --rm web rails c
-        - docker-compose logs web
+        - compose -f ~/codes/brackety-docker/development.yml run --rm web rails c
+        - compose logs web
         - cd /web
-          && alias rails='docker-compose -f ~/codes/brackety-docker/development.yml run --rm web rails'
-          && alias rake='docker-compose -f ~/codes/brackety-docker/development.yml run --rm web rake'
+          && alias rails='compose -f ~/codes/brackety-docker/development.yml run --rm web rails'
+          && alias rake='compose -f ~/codes/brackety-docker/development.yml run --rm web rake'
           && alias build='docker build --force-rm -t brackety/brackety /web'
-          && alias install='docker-compose -f ~/codes/brackety-docker/development.yml run --rm web bundle config --global frozen 0 && bundle install && bundle config --global frozen 1'
+          && alias install='compose -f ~/codes/brackety-docker/development.yml run --rm web bundle config --global frozen 0 && bundle install && bundle config --global frozen 1'
           && git status
