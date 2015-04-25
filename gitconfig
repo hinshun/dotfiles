@@ -4,5 +4,6 @@
 [core]
   editor = vim
   excludesfile = /home/.gitignore
+  pager = less
 [push]
   default = simple
