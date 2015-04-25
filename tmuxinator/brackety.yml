@@ -32,9 +32,10 @@ windows:
         - docker-compose run --rm ember ember test --server
         - docker-compose logs ember
         - cd /ember
-          && alias ember='docker exec -it bracketydocker_ember_1 ember'
-          && alias npm='docker exec -it bracketydocker_ember_1 npm'
-          && alias bower='docker exec -it bracketydocker_ember_1 bower --allow-root'
+          && alias ember='docker-compose -f ~/codes/brackety-docker/development.yml run --rm ember ember'
+          && alias npm='docker-compose -f ~/codes/brackety-docker/development.yml run --rm ember npm'
+          && alias bower='docker-compose -f ~/codes/brackety-docker/development.yml run --rm ember bower'
+          && alias build='docker build --force-rm -t brackety/brackety-ember /ember'
           && git status
   - web:
       layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
@@ -43,9 +44,11 @@ windows:
         - cd /web
           && export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
-        - docker exec -it bracketydocker_web_1 rails c
+        - docker-compose -f ~/codes/brackety-docker/development.yml run --rm web rails c
         - docker-compose logs web
         - cd /web
-          && alias rails='docker exec bracketydocker_web_1 rails'
-          && alias rake='docker exec bracketydocker_web_1 rake'
+          && alias rails='docker-compose -f ~/codes/brackety-docker/development.yml run --rm web rails'
+          && alias rake='docker-compose -f ~/codes/brackety-docker/development.yml run --rm web rake'
+          && alias build='docker build --force-rm -t brackety/brackety /web'
+          && alias install='docker-compose -f ~/codes/brackety-docker/development.yml run --rm web bundle config --global frozen 0 && bundle install && bundle config --global frozen 1'
           && git status
