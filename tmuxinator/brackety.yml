@@ -45,6 +45,6 @@ windows:
         - compose logs web
         - alias rails='compose run --rm web rails'
           && alias rake='compose run --rm web rake'
-          && alias install='compose run --rm web bundle config --global frozen 0 && bundle install && bundle config --global frozen 1'
+          && alias install='compose run --rm web bundle install'
           && alias build='docker build --force-rm -t brackety/brackety /web'
           && git status
