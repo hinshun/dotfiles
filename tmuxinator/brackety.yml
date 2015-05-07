@@ -24,9 +24,8 @@ pre_window: alias compose='docker-compose -f ~/codes/brackety-docker/docker-comp
 windows:
   - ember:
       root: /ember
-      layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
+      layout: c8b0,204x58,0,0{122x58,0,0,6,81x58,123,0[81x29,123,0,7,81x21,123,30,8,81x6,123,52,9]}
       panes:
-        - docker stats $(compose ps ember | grep -v run | awk '{print $1}' | tail -n +3)
         - export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
         - compose run --rm ember ember test --server
@@ -38,9 +37,8 @@ windows:
           && git status
   - web:
       root: /web
-      layout: eabf,204x58,0,0{122x58,0,0[122x3,0,0,0,122x54,0,4,21],81x58,123,0[81x29,123,0,2,81x21,123,30,3,81x6,123,52,4]}
+      layout: c8b0,204x58,0,0{122x58,0,0,6,81x58,123,0[81x29,123,0,7,81x21,123,30,8,81x6,123,52,9]}
       panes:
-        - docker stats $(compose ps web | grep -v run | awk '{print $1}' | tail -n +3)
         - export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
         - compose run --rm web rails c
