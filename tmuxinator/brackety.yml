@@ -47,4 +47,4 @@ windows:
           && alias build='docker build --force-rm -t brackety/brackety /web'
           && git status
         - compose logs web
-        - compose run --rm web bin/rails c
+        - compose run --rm web pry -r ./config/environment
