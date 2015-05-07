@@ -41,10 +41,10 @@ windows:
       panes:
         - export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
-        - alias rails='compose run --rm web rails'
-          && alias rake='compose run --rm web rake'
-          && alias guard='compose run --rm web guard'
+        - alias rails='compose run --rm web bin/rails'
+          && alias rake='compose run --rm web bin/rake'
+          && alias guard='compose run --rm web bin/guard'
           && alias build='docker build --force-rm -t brackety/brackety /web'
           && git status
         - compose logs web
-        - compose run --rm web rails c
+        - compose run --rm web bin/rails c
