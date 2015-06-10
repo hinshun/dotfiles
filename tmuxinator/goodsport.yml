@@ -1,7 +1,7 @@
-# ~/.tmuxinator/brackety.yml
+# ~/.tmuxinator/goodsport.yml
 
-name: brackety
-root: ~/codes/brackety-docker
+name: goodsport
+root: ~/codes/goodsport-docker
 
 # Optional tmux socket
 # socket_name: foo
@@ -10,7 +10,7 @@ root: ~/codes/brackety-docker
 # pre: sudo /etc/rc.d/mysqld start
 
 # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
-pre_window: alias compose='docker-compose -f ~/codes/brackety-docker/docker-compose.yml -p brackety'
+pre_window: alias compose='docker-compose -f ~/codes/goodsport-docker/docker-compose.yml -p goodsport'
 
 # Pass command line options to tmux. Useful for specifying a different tmux.conf.
 # tmux_options: -f ~/.tmux.mac.conf
@@ -33,7 +33,7 @@ windows:
         - alias ember='compose run --rm ember ember'
           && alias npm='compose run --rm ember npm'
           && alias bower='compose run --rm ember bower --allow-root'
-          && alias build='docker build --force-rm -t brackety/brackety-ember /ember'
+          && alias build='docker build --force-rm -t goodsport/goodsport-ember /ember'
           && git status
   - web:
       root: /web
@@ -44,7 +44,7 @@ windows:
         - alias rails='compose run --rm web bin/rails'
           && alias rake='compose run --rm web bin/rake'
           && alias guard='compose run --rm web bin/guard'
-          && alias build='docker build --force-rm -t brackety/brackety /web'
+          && alias build='docker build --force-rm -t goodsport/goodsport /web'
           && git status
         - compose logs web
         - compose run --rm web pry -r ./config/environment
