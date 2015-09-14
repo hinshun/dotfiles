@@ -12,6 +12,7 @@ silent! if plug#begin('~/.vim/plugged')
 
 " Colors
 Plug 'hinshun/vim-tomorrow-theme'
+Plug 'junegunn/limelight.vim'
 
 " Status
 Plug 'bling/vim-airline'
