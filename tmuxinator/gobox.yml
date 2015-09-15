@@ -1,7 +1,7 @@
-# ~/.tmuxinator/godev.yml
+# ~/.tmuxinator/gobox.yml
 
-name: godev
-root: /godev
+name: gobox
+root: /gobox
 
 # Optional tmux socket
 # socket_name: foo
@@ -25,7 +25,7 @@ root: /godev
 # attach: false
 
 # Runs after everything. Use it to attach to tmux with custom options etc.
-# post: tmux -CC attach -t godev
+# post: tmux -CC attach -t gobox
 
 windows:
   - main:
