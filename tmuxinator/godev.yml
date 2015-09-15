@@ -33,4 +33,4 @@ windows:
       panes:
         - export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
-        - alias go='docker run --rm golang go'
+        - alias go='docker run --rm -v /Users/edgar/codes/$PWD:/go golang go'
