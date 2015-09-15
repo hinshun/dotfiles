@@ -45,6 +45,7 @@ if v:version >= 703
   Plug 'vim-ruby/vim-ruby'
 endif
 Plug 'tpope/vim-rails'
+Plug 'fatih/vim-go'
 Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
