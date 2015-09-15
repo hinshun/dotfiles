@@ -29,8 +29,7 @@ root: /gobox
 
 windows:
   - main:
-      layout: db03,204x58,0,0{127x58,0,0,0,76x58,128,0,1}
+      layout: ce9d,204x58,0,0,0
       panes:
         - export FZF_DEFAULT_COMMAND='ag -l -g ""'
           && vim
-        - alias go='docker run --rm -v /Users/edgar/codes/$PWD:/go golang go'
