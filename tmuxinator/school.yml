@@ -28,7 +28,7 @@ root: /school
 # post: tmux -CC attach -t school
 
 windows:
-  - main:
+  - vim:
       layout: db03,204x58,0,0{127x58,0,0,0,76x58,128,0,1}
       panes:
         - export FZF_DEFAULT_COMMAND='ag -l -g ""'
