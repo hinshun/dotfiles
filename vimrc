@@ -256,11 +256,6 @@ nnoremap <silent> <Leader>bf :call fzf#run({
 " Non-leader Key Mappings
 "===============================================================================
 
-" jk: <ESC>
-inoremap jk <Esc>
-xnoremap jk <Esc>
-cnoremap jk <C-c>
-
 " Movement in INSERT mode
 inoremap <C-h> <C-o>h
 inoremap <C-l> <C-o>a
