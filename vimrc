@@ -4,6 +4,9 @@ filetype plugin indent on
 " Enable syntax
 syntax enable
 
+" Enable modelines
+set modelines=2
+
 "===============================================================================
 " Plugins
 "===============================================================================
@@ -25,13 +28,25 @@ Plug 'tpope/vim-commentary'
 Plug 'lokaltog/vim-easymotion'
 Plug 'osyo-manga/vim-over'
 Plug 'junegunn/vim-easy-align'
-Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' }
+Plug 'mbbill/undotree', { 'on': 'UndotreeToggle'   }
+Plug 'junegunn/vim-fnr'
+Plug 'junegunn/vim-peekaboo'
+Plug 'ConradIrwin/vim-bracketed-paste'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+if v:version >= 703
+  Plug 'junegunn/vim-after-object'
+endif
 
 " Browsing
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
+Plug 'junegunn/fzf.vim'
 Plug 'rking/ag.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'bogado/file-line'
+Plug 'junegunn/vim-pseudocl'
+Plug 'junegunn/vim-oblique'
+Plug 'Keithbsmiley/investigate.vim'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -49,6 +64,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
 Plug 'mustache/vim-mustache-handlebars'
+Plug 'junegunn/vim-journal'
 
 call plug#end()
 endif
@@ -67,7 +83,7 @@ set shortmess+=I
 set t_Co=256
 
 " Always show statusline
-set laststatus=2
+
 
 " Enable unicode
 set encoding=utf-8
@@ -205,7 +221,10 @@ let maplocalleader = " "
 let g:maplocalleader = " "
 
 " <Leader><Leader>: Open files
-nnoremap <Leader><Leader> :FZF -m<CR>
+nnoremap <silent> <Leader><Leader> :Files<CR>
+
+" <Leader><Leader>: Open buffers
+nnoremap <silent> <Leader><Enter> :Buffers<CR>
 
 " <Leader>/: Clear highlighted searches
 nnoremap <Leader>/ :nohlsearch<cr>
@@ -221,9 +240,6 @@ nnoremap <Leader>nt :NERDTreeToggle<cr>
 
 " <Leader>ag: Fast content searching
 nnoremap <Leader>ag :Ag<space>
-
-" <Leader>ut: Undo Tree
-nnoremap <Leader>ut :GundoToggle<CR>
 
 " <Leader>ge: Git edit
 nnoremap <Leader>ge :Gedit<CR>
@@ -247,22 +263,32 @@ vnoremap <Leader>gl :Gitv!<CR>
 " <Leader>l: Toggle Limelight
 nnoremap  <Leader>l :Limelight!!<CR>
 
-nnoremap <silent> <Leader>bf :call fzf#run({
-\   'source':  reverse(<sid>buflist()),
-\   'sink':    function('<sid>bufopen'),
-\   'options': '+m',
-\   'down':    len(<sid>buflist()) + 2
-\ })<CR>
+" <Leader>r: Find n' Replace
+nmap <Leader>r <Plug>(FNR%)
+xmap <Leader>r <Plug>(FNR)
 
 "===============================================================================
 " Non-leader Key Mappings
 "===============================================================================
+
+" U: Undo tree
+nnoremap U :UndotreeToggle<CR>
 
 " Movement in INSERT mode
 inoremap <C-h> <C-o>h
 inoremap <C-l> <C-o>a
 inoremap <C-j> <C-o>j
 inoremap <C-k> <C-o>k
+
+" Moving lines
+nnoremap <silent> <C-k> :move-2<cr>
+nnoremap <silent> <C-j> :move+<cr>
+nnoremap <silent> <C-h> <<
+nnoremap <silent> <C-l> >>
+xnoremap <silent> <C-k> :move-2<cr>gv
+xnoremap <silent> <C-j> :move'>+<cr>gv
+xnoremap <silent> <C-h> <gv
+xnoremap <silent> <C-l> >gv
 
 " gt: Goto line with fuzzy match
 nnoremap <silent> gt :call fzf#run({
@@ -272,9 +298,32 @@ nnoremap <silent> gt :call fzf#run({
 \   'down':    '60%'
 \ })<CR>
 
-" Jump through Quickfix results
-nmap <silent> ]q :cnext<CR>
-nmap <silent> [q :cprev<CR>
+" ]q: Next quickfix
+nnoremap ]q :cnext<cr>zz
+
+" [q: Next quickfix
+nnoremap [q :cprev<cr>zz
+
+" ]b: Next buffer
+nnoremap ]b :bnext<cr>
+
+" [b: Previous buffer
+nnoremap [b :bprev<cr>
+
+" <C-x><C-k>: Autocomplete from English dictionary
+imap <C-x><C-k> <plug>(fzf-complete-word)
+
+" <C-x><C-f>: Autocomplete from paths in pwd
+imap <C-x><C-f> <plug>(fzf-complete-path)
+
+" <C-x><C-j>: Autocomplete from files in pwd
+imap <C-x><C-j> <plug>(fzf-complete-file-ag)
+
+" <C-x><C-l>: Autocomplete from lines in buffers
+imap <C-x><C-l> <plug>(fzf-complete-line)
+
+" <C-x><C-l>: Autocomplete from visible tmux
+inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current --scroll 500 --min 5')
 
 "===============================================================================
 " Functions
@@ -348,34 +397,37 @@ augroup END
 " Plugin Settings
 "===============================================================================
 
-" NERDTree
+" scrooloose/nerdtree
 let NERDTreeShowBookmarks = 1
 let NERDTreeShowHidden = 1
 let NERDTreeIgnore = ['\~$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
 
-" Syntastic
+" scrooloose/syntastic
 let g:syntastic_check_on_open = 1
 let g:syntastic_cpp_check_header = 1
 let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
 
-" EasyMotion
+" lokaltog/vim-easymotion
 map <Leader> <Plug>(easymotion-prefix)
-map / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-map n <Plug>(easymotion-next)
-map N <Plug>(easymotion-prev)
-let g:EasyMotion_smartcase = 1
 let g:EasyMotion_keys = 'abcdefghijklmnopqrstuvwxyz'
 hi link EasyMotionShade  Comment
 
-" EasyAlign
+" junegunn/vim-easy-align
 vmap <Enter> <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
-" Gitv
+" gregsexton/gitv
 let g:Gitv_TruncateCommitSubjects = 1
 
-" Airline
+" junegunn/vim-after-object
+silent! if has_key(g:plugs, 'vim-after-object')
+  autocmd VimEnter * silent! call after_object#enable('=', ':', '#', ' ', '|')
+endif
+
+" mbbill/undotree
+let g:undotree_WindowLayout = 2
+
+" bling/vim-airline
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
