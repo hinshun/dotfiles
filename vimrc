@@ -5,7 +5,7 @@ filetype plugin indent on
 syntax enable
 
 " Enable modelines
-set modelines=5
+set modelines=2
 
 "===============================================================================
 " Plugins
@@ -31,6 +31,7 @@ Plug 'junegunn/vim-easy-align'
 Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' }
 Plug 'junegunn/vim-fnr'
 Plug 'junegunn/vim-peekaboo'
+Plug 'ConradIrwin/vim-bracketed-paste'
 if v:version >= 703
   Plug 'junegunn/vim-after-object'
 endif
@@ -42,6 +43,7 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'bogado/file-line'
 Plug 'junegunn/vim-pseudocl'
 Plug 'junegunn/vim-oblique'
+Plug 'Keithbsmiley/investigate.vim'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -284,9 +286,17 @@ nnoremap <silent> gt :call fzf#run({
 \   'down':    '60%'
 \ })<CR>
 
-" Jump through Quickfix results
-nmap <silent> ]q :cnext<CR>
-nmap <silent> [q :cprev<CR>
+" ]q: Next quickfix
+nnoremap ]q :cnext<cr>zz
+
+" [q: Next quickfix
+nnoremap [q :cprev<cr>zz
+
+" ]b: Next buffer
+nnoremap ]b :bnext<cr>
+
+" [b: Previous buffer
+nnoremap [b :bprev<cr>
 
 "===============================================================================
 " Functions
