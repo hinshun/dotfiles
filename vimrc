@@ -28,7 +28,6 @@ Plug 'tpope/vim-commentary'
 Plug 'lokaltog/vim-easymotion'
 Plug 'osyo-manga/vim-over'
 Plug 'junegunn/vim-easy-align'
-Plug 'junegunn/vim-peekaboo'
 Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' }
 Plug 'junegunn/vim-fnr'
 if v:version >= 703
