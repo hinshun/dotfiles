@@ -4,6 +4,9 @@ filetype plugin indent on
 " Enable syntax
 syntax enable
 
+" Enable modelines
+set modelines=5
+
 "===============================================================================
 " Plugins
 "===============================================================================
@@ -27,12 +30,18 @@ Plug 'osyo-manga/vim-over'
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/vim-peekaboo'
 Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' }
+Plug 'junegunn/vim-fnr'
+if v:version >= 703
+  Plug 'junegunn/vim-after-object'
+endif
 
 " Browsing
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
 Plug 'rking/ag.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'bogado/file-line'
+Plug 'junegunn/vim-pseudocl'
+Plug 'junegunn/vim-oblique'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -50,6 +59,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
 Plug 'mustache/vim-mustache-handlebars'
+Plug 'junegunn/vim-journal'
 
 call plug#end()
 endif
@@ -245,6 +255,10 @@ nnoremap <Leader>gr :Gitv<CR>
 nnoremap <Leader>gl :Gitv!<CR>
 vnoremap <Leader>gl :Gitv!<CR>
 
+" <Leader>r: Find n' Replace
+nmap <Leader>r <Plug>(FNR%)
+xmap <Leader>r <Plug>(FNR)
+
 nnoremap <silent> <Leader>bf :call fzf#run({
 \   'source':  reverse(<sid>buflist()),
 \   'sink':    function('<sid>bufopen'),
@@ -346,34 +360,34 @@ augroup END
 " Plugin Settings
 "===============================================================================
 
-" NERDTree
+" scrooloose/nerdtree
 let NERDTreeShowBookmarks = 1
 let NERDTreeShowHidden = 1
 let NERDTreeIgnore = ['\~$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
 
-" Syntastic
+" scrooloose/syntastic
 let g:syntastic_check_on_open = 1
 let g:syntastic_cpp_check_header = 1
 let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
 
-" EasyMotion
+" lokaltog/vim-easymotion
 map <Leader> <Plug>(easymotion-prefix)
-map / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-map n <Plug>(easymotion-next)
-map N <Plug>(easymotion-prev)
-let g:EasyMotion_smartcase = 1
 let g:EasyMotion_keys = 'abcdefghijklmnopqrstuvwxyz'
 hi link EasyMotionShade  Comment
 
-" EasyAlign
+" junegunn/vim-easy-align
 vmap <Enter> <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
-" Gitv
+" gregsexton/gitv
 let g:Gitv_TruncateCommitSubjects = 1
 
-" Airline
+" junegunn/vim-after-object
+silent! if has_key(g:plugs, 'vim-after-object')
+  autocmd VimEnter * silent! call after_object#enable('=', ':', '#', ' ', '|')
+endif
+
+" bling/vim-airline
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
