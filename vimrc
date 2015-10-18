@@ -244,6 +244,9 @@ nnoremap <Leader>gr :Gitv<CR>
 nnoremap <Leader>gl :Gitv!<CR>
 vnoremap <Leader>gl :Gitv!<CR>
 
+" <Leader>l: Toggle Limelight
+nnoremap  <Leader>l :Limelight!!<CR>
+
 nnoremap <silent> <Leader>bf :call fzf#run({
 \   'source':  reverse(<sid>buflist()),
 \   'sink':    function('<sid>bufopen'),
