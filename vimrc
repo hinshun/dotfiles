@@ -33,6 +33,7 @@ Plug 'junegunn/vim-fnr'
 Plug 'junegunn/vim-peekaboo'
 Plug 'ConradIrwin/vim-bracketed-paste'
 Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 if v:version >= 703
   Plug 'junegunn/vim-after-object'
 endif
