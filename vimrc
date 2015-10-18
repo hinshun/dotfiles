@@ -83,7 +83,7 @@ set shortmess+=I
 set t_Co=256
 
 " Always show statusline
-
+set laststatus=2
 
 " Enable unicode
 set encoding=utf-8
