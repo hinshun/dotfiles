@@ -30,6 +30,7 @@ Plug 'osyo-manga/vim-over'
 Plug 'junegunn/vim-easy-align'
 Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' }
 Plug 'junegunn/vim-fnr'
+Plug 'junegunn/vim-peekaboo'
 if v:version >= 703
   Plug 'junegunn/vim-after-object'
 endif
