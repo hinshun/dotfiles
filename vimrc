@@ -64,7 +64,6 @@ Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
 Plug 'mustache/vim-mustache-handlebars'
-Plug 'junegunn/vim-journal'
 
 call plug#end()
 endif
@@ -225,9 +224,6 @@ nnoremap <silent> <Leader><Leader> :Files<CR>
 
 " <Leader><Leader>: Open buffers
 nnoremap <silent> <Leader><Enter> :Buffers<CR>
-
-" <Leader>/: Clear highlighted searches
-nnoremap <Leader>/ :nohlsearch<cr>
 
 " <Leader>pi: Installs Plugins
 nnoremap <Leader>pi :PlugInstall<cr>
