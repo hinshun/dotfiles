@@ -196,7 +196,6 @@ set wildmenu
 set nostartofline
 
 " Enable mouse
-set ttymouse=xterm2
 set mouse=a
 
 if has('patch-7.3.541')
