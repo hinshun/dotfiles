@@ -1,6 +1,6 @@
 [user]
   name = Edgar Lee
-  email = edgarhinshunlee@gmail.com
+  email = edgar.lee@docker.com
 [core]
   editor = vim
   excludesfile = /home/.gitignore

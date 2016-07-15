@@ -15,7 +15,6 @@ silent! if plug#begin('~/.vim/plugged')
 
 " Colors
 Plug 'hinshun/vim-tomorrow-theme'
-Plug 'junegunn/limelight.vim'
 
 " Status
 Plug 'bling/vim-airline'
@@ -26,7 +25,6 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-commentary'
 Plug 'lokaltog/vim-easymotion'
-Plug 'osyo-manga/vim-over'
 Plug 'junegunn/vim-easy-align'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle'   }
 Plug 'junegunn/vim-fnr'
@@ -39,31 +37,26 @@ if v:version >= 703
 endif
 
 " Browsing
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
+Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'rking/ag.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
 Plug 'bogado/file-line'
-Plug 'junegunn/vim-pseudocl'
-Plug 'junegunn/vim-oblique'
-Plug 'Keithbsmiley/investigate.vim'
 
 " Git
 Plug 'tpope/vim-fugitive'
-Plug 'gregsexton/gitv'
+Plug 'junegunn/gv.vim'
 Plug 'airblade/vim-gitgutter'
 
 " Lang
-Plug 'scrooloose/syntastic'
-if v:version >= 703
-  Plug 'vim-ruby/vim-ruby'
-endif
-Plug 'tpope/vim-rails'
 Plug 'fatih/vim-go'
 Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
-Plug 'mustache/vim-mustache-handlebars'
+
+" Lint
+Plug 'scrooloose/syntastic'
 
 call plug#end()
 endif
@@ -249,18 +242,29 @@ nnoremap <Leader>gd :Gdiff<CR>
 nnoremap <Leader>gs :Gstatus<CR>
 
 " <Leader>gr: View git repository
-nnoremap <Leader>gr :Gitv<CR>
+nnoremap <Leader>gr :GV<CR>
 
 " <Leader>gl: Git log
-nnoremap <Leader>gl :Gitv!<CR>
-vnoremap <Leader>gl :Gitv!<CR>
-
-" <Leader>l: Toggle Limelight
-nnoremap  <Leader>l :Limelight!!<CR>
+nnoremap <Leader>gl :GV!<CR>
+vnoremap <Leader>gl :GV!<CR>
 
 " <Leader>r: Find n' Replace
 nmap <Leader>r <Plug>(FNR%)
 xmap <Leader>r <Plug>(FNR)
+
+au FileType go nmap <leader>or <Plug>(go-run)
+au FileType go nmap <leader>ob <Plug>(go-build)
+au FileType go nmap <leader>ot <Plug>(go-test)
+au FileType go nmap <leader>oc <Plug>(go-coverage)
+
+au FileType go nmap <Leader>od <Plug>(go-def)
+au FileType go nmap <Leader>oc <Plug>(go-doc-vertical)
+
+au FileType go nmap <Leader>os <Plug>(go-implements)
+
+au FileType go nmap <Leader>oi <Plug>(go-info)
+
+au FileType go nmap <Leader>oe <Plug>(go-rename)
 
 "===============================================================================
 " Non-leader Key Mappings
@@ -304,9 +308,6 @@ nnoremap ]b :bnext<cr>
 
 " [b: Previous buffer
 nnoremap [b :bprev<cr>
-
-" <C-x><C-k>: Autocomplete from English dictionary
-imap <C-x><C-k> <plug>(fzf-complete-word)
 
 " <C-x><C-f>: Autocomplete from paths in pwd
 imap <C-x><C-f> <plug>(fzf-complete-path)
@@ -411,9 +412,6 @@ hi link EasyMotionShade  Comment
 vmap <Enter> <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
-" gregsexton/gitv
-let g:Gitv_TruncateCommitSubjects = 1
-
 " junegunn/vim-after-object
 silent! if has_key(g:plugs, 'vim-after-object')
   autocmd VimEnter * silent! call after_object#enable('=', ':', '#', ' ', '|')
@@ -421,6 +419,14 @@ endif
 
 " mbbill/undotree
 let g:undotree_WindowLayout = 2
+
+" fatih/vim-go
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
 
 " bling/vim-airline
 if !exists('g:airline_symbols')
