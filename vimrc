@@ -17,7 +17,8 @@ silent! if plug#begin('~/.vim/plugged')
 Plug 'hinshun/vim-tomorrow-theme'
 
 " Status
-Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 " Edit
 Plug 'tpope/vim-repeat'
@@ -50,7 +51,7 @@ Plug 'junegunn/gv.vim'
 Plug 'airblade/vim-gitgutter'
 
 " Lang
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
@@ -153,6 +154,16 @@ set autoindent
 set smartindent
 set linebreak
 
+" Virtual editing for cursor to be placed in virtual mode where there is no
+" actual character
+set virtualedit=block
+
+" Use blowfish2 encryption for buffers written to file
+set cryptmethod=blowfish2
+
+" Reduce syntax searching in long column lines
+set synmaxcol=1000
+
 " 80 chars/line
 set textwidth=0
 if exists('&colorcolumn')
@@ -188,8 +199,18 @@ set wildmenu
 " Keep cursor on same column
 set nostartofline
 
+" Enable numerical addition/subtraction for hexadecimals
+set nrformats=hex
+
 " Enable mouse
 set mouse=a
+
+" Temporary files
+set backupdir=/tmp/vim//,.
+set directory=/tmp/vim//,.
+if v:version >= 703
+  set undodir=/tmp/vim//,.
+endif
 
 if has('patch-7.3.541')
   set formatoptions+=j
@@ -252,6 +273,12 @@ vnoremap <Leader>gl :GV!<CR>
 nmap <Leader>r <Plug>(FNR%)
 xmap <Leader>r <Plug>(FNR)
 
+" <Leader>z: Toggle zoom by alternating between tabs and splits
+nnoremap <silent> <leader>z :call <sid>zoom()<cr>
+
+" <Leader>c: Close quickfix window
+nnoremap <leader>c :cclose<bar>lclose<cr>
+
 au FileType go nmap <leader>or <Plug>(go-run)
 au FileType go nmap <leader>ob <Plug>(go-build)
 au FileType go nmap <leader>ot <Plug>(go-test)
@@ -289,14 +316,6 @@ xnoremap <silent> <C-j> :move'>+<cr>gv
 xnoremap <silent> <C-h> <gv
 xnoremap <silent> <C-l> >gv
 
-" gt: Goto line with fuzzy match
-nnoremap <silent> gt :call fzf#run({
-\   'source':  <sid>buffer_lines(),
-\   'sink':    function('<sid>line_handler'),
-\   'options': '--extended --nth=3..',
-\   'down':    '60%'
-\ })<CR>
-
 " ]q: Next quickfix
 nnoremap ]q :cnext<cr>zz
 
@@ -325,31 +344,13 @@ inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current --scroll
 " Functions
 "===============================================================================
 
-function! s:buflist()
-  redir => ls
-  silent ls
-  redir END
-  return split(ls, '\n')
-endfunction
-
-function! s:bufopen(e)
-  execute 'buffer' matchstr(a:e, '^[ 0-9]*')
-endfunction
-
-function! s:line_handler(l)
-  let keys = split(a:l, ':\t')
-  exec 'buf ' . keys[0]
-  exec keys[1]
-  normal! ^zz
-endfunction
-
-function! s:buffer_lines()
-  let res = []
-  for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
-    call extend(res, map(
-          \ getbufline(b,0,"$"), 'b . ":\t" . (v:key + 1) . ":\t" . v:val '))
-  endfor
-  return res
+function! s:zoom()
+  if winnr('$') > 1
+    tab split
+  elseif len(filter(map(range(tabpagenr('$')), 'tabpagebuflist(v:val + 1)'),
+                  \ 'index(v:val, '.bufnr('').') >= 0')) > 1
+    tabclose
+  endif
 endfunction
 
 "===============================================================================
@@ -428,17 +429,15 @@ let g:go_highlight_types = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
 
+" junegunn/fzf
+command! Plugs call fzf#run({
+  \ 'source':  map(sort(keys(g:plugs)), 'g:plug_home."/".v:val'),
+  \ 'options': '--delimiter / --nth -1',
+  \ 'down':    '~40%',
+  \ 'sink':    'Explore'})
+
 " bling/vim-airline
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
+let g:airline_powerline_fonts = 1
 
 function! AirlineInit()
   let g:airline_section_b = airline#section#create_left(['%t'])
@@ -446,27 +445,6 @@ function! AirlineInit()
   let g:airline_section_x = airline#section#create_right([''])
   let g:airline_section_y = airline#section#create_right(['%c'])
   let g:airline_section_z = airline#section#create_right(['branch'])
-endfunction
-
-let g:airline_theme_patch_func = 'AirLineTheme'
-function! AirLineTheme(palette)
-  if g:airline_theme == 'Tomorrow-Night'
-
-    let green = ['', '', 255, 64, '']
-    let magenta = ['', '', 255, 125, '']
-    let orange = ['', '', 255, 166, '']
-
-    let modes = {
-      \ 'insert': green,
-      \ 'replace': magenta,
-      \ 'visual': orange
-      \ }
-
-    for key in keys(modes)
-      let a:palette[key].airline_a = modes[key]
-      let a:palette[key].airline_z = modes[key]
-    endfor
-  endif
 endfunction
 
 let g:airline_mode_map = {

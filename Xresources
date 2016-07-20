@@ -82,8 +82,8 @@ URxvt*utf8:                  1
 URxvt*saveLines:             999999
 
 ! -- Fonts -- !
-URxvt.font:xft:Inconsolata:pixelsize=27,style=Medium, xft:Symbola:pixelsize=19,style=Regular
-URxvt.boldFont:xft:Inconsolata:style=Bold,pixelsize=27, xft:Symbola:pixelsize=19,style=Regular
+URxvt*font:xft:Droid\ Sans\ Mono\ for\ Powerline:pixelsize=27,style=Medium,xft:Inconsolata:pixelsize=19,style=Regular
+URxvt.boldFont:xft:Droid\ Sans\ Mono\ for\ Powerline:style=Bold,pixelsize=27, xft:Inconsolata:pixelsize=19,style=Regular
 
 URxvt*faceSize:              10
 URxvt*bellIsUrgent:          true

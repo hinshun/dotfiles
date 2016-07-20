@@ -10,14 +10,14 @@ general {
 	colors = true
 	color_good = "#51ca7e" color_degraded = "#fbd25d"
 	color_bad = "#de8f91"
-	interval = 5
+	interval = 10
 }
 
 order += "volume master"
 order += "disk /"
 order += "run_watch DHCP"
 order += "run_watch VPN"
-order += "wireless wlp2s0"
+order += "wireless wlp58s0"
 order += "battery 0"
 order += "cpu_usage"
 order += "cpu_temperature 0"
@@ -25,12 +25,12 @@ order += "tztime local"
 
 volume master {
 	format    = "♪: %volume"
-	device    = "default"
+	device    = "pulse:0"
 	mixer     = "Master"
 	mixer_idx = 0
 }
 
-wireless wlp2s0 {
+wireless wlp58s0 {
 	format_up   = "W: (%quality at %essid)"
 	format_down = "W: down"
 }
@@ -41,7 +41,7 @@ battery 0 {
 }
 
 run_watch DHCP {
-	pidfile = "/var/run/dhcpcd*.pid"
+	pidfile = "/var/run/dhclient*.pid"
 }
 
 tztime local {
