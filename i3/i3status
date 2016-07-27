@@ -14,7 +14,10 @@ general {
 }
 
 order += "volume master"
-order += "disk /"
+order += "disk /var"
+order += "disk /tmp"
+order += "disk /home"
+order += "run_watch dockerd"
 order += "run_watch DHCP"
 order += "run_watch VPN"
 order += "wireless wlp58s0"
@@ -44,19 +47,31 @@ run_watch DHCP {
 	pidfile = "/var/run/dhclient*.pid"
 }
 
+run_watch dockerd {
+	pidfile = "/var/run/docker.pid"
+}
+
 tztime local {
-	format = "%m-%d %I:%M"
+  format = "%a %m-%d %H:%M"
 	timezone = "US/Pacific"
 }
 
 cpu_usage {
-	format = "%usage"
+	format = "CPU %usage"
 }
 
 cpu_temperature 0 {
-	format = "%degrees °C"
+	format = "T %degrees °C"
 }
 
-disk "/" {
-	format = "%avail"
+disk "/var" {
+	format = "/var %percentage_used"
+}
+
+disk "/tmp" {
+	format = "/tmp %percentage_used"
+}
+
+disk "/home" {
+	format = "/home %percentage_used"
 }

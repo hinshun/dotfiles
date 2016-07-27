@@ -1,4 +1,5 @@
 bin/docker-versions/docker*
+bin/docker
 config/google-chrome/
 config/Slack/
 config/pulse/
