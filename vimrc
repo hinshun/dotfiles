@@ -29,6 +29,7 @@ Plug 'lokaltog/vim-easymotion'
 Plug 'junegunn/vim-easy-align'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle'   }
 Plug 'junegunn/vim-fnr'
+Plug 'junegunn/vim-pseudocl'
 Plug 'junegunn/vim-peekaboo'
 Plug 'ConradIrwin/vim-bracketed-paste'
 Plug 'SirVer/ultisnips'
@@ -36,11 +37,14 @@ Plug 'honza/vim-snippets'
 if v:version >= 703
   Plug 'junegunn/vim-after-object'
 endif
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'zchee/deoplete-go', { 'do': 'make'}
+endif
 
 " Browsing
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'rking/ag.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
 Plug 'bogado/file-line'
@@ -154,12 +158,12 @@ set autoindent
 set smartindent
 set linebreak
 
+" Wrap lines
+set wrap
+
 " Virtual editing for cursor to be placed in virtual mode where there is no
 " actual character
 set virtualedit=block
-
-" Use blowfish2 encryption for buffers written to file
-set cryptmethod=blowfish2
 
 " Reduce syntax searching in long column lines
 set synmaxcol=1000
@@ -190,7 +194,7 @@ set diffopt=filler,vertical
 set grepformat=%f:%l:%c:%m,%f:%l:%m
 
 " Insert mode completion
-set completeopt=menuone,preview,longest
+set completeopt=menuone,longest,noselect
 
 " Enable wild menu
 set wildmode=list:longest,full
@@ -220,6 +224,11 @@ if has('patch-7.4.338')
   let &showbreak = '↳ '
   set breakindent
   set breakindentopt=sbr
+endif
+
+if !has('nvim')
+  " Use blowfish2 encryption for buffers written to file
+  set cryptmethod=blowfish2
 endif
 
 "===============================================================================
@@ -260,14 +269,13 @@ nnoremap <Leader>gb :Gblame<CR>
 nnoremap <Leader>gd :Gdiff<CR>
 
 " <Leader>gs: Git status
-nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>gs :GFiles?<CR>
 
-" <Leader>gr: View git repository
-nnoremap <Leader>gr :GV<CR>
+" <Leader>gr: Git commits
+nnoremap <Leader>gc :Commits<CR>
 
-" <Leader>gl: Git log
-nnoremap <Leader>gl :GV!<CR>
-vnoremap <Leader>gl :GV!<CR>
+" <Leader>gl: Git commits on current file
+nnoremap <Leader>gl :BCommits<CR>
 
 " <Leader>r: Find n' Replace
 nmap <Leader>r <Plug>(FNR%)
@@ -383,11 +391,6 @@ augroup auglobal
   autocmd BufEnter * if (winnr("$") == 1
         \ && exists("b:NERDTreeType") && b:NERDTreeType == "primary")
         \ | q | endif
-
-  " Initialize Airline sections
-  if exists('airline')
-    autocmd VimEnter * call AirlineInit()
-  end
 augroup END
 
 "===============================================================================
@@ -403,6 +406,14 @@ let NERDTreeIgnore = ['\~$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
 let g:syntastic_check_on_open = 1
 let g:syntastic_cpp_check_header = 1
 let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+let g:go_list_type = "quickfix"
+
+" SirVer/ultisnips
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
 " lokaltog/vim-easymotion
 map <Leader> <Plug>(easymotion-prefix)
@@ -429,7 +440,10 @@ let g:go_highlight_types = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
 
-" junegunn/fzf
+" hinshun/fzf.vim
+let $FZF_DEFAULT_COMMAND = 'ag -l --ignore goartifacts -g ""'
+let g:fzf_layout = { 'window': '-tabnew' }
+" let g:fzf_layout = { 'window': 'enew' }
 command! Plugs call fzf#run({
   \ 'source':  map(sort(keys(g:plugs)), 'g:plug_home."/".v:val'),
   \ 'options': '--delimiter / --nth -1',
@@ -438,14 +452,15 @@ command! Plugs call fzf#run({
 
 " bling/vim-airline
 let g:airline_powerline_fonts = 1
-
 function! AirlineInit()
-  let g:airline_section_b = airline#section#create_left(['%t'])
-  let g:airline_section_c = airline#section#create([''])
-  let g:airline_section_x = airline#section#create_right([''])
-  let g:airline_section_y = airline#section#create_right(['%c'])
-  let g:airline_section_z = airline#section#create_right(['branch'])
+  let g:airline_section_a = airline#section#create_left(['mode'])
+  let g:airline_section_b = airline#section#create_left(['filetype'])
+  let g:airline_section_c = airline#section#create_left(['%t'])
+  let g:airline_section_x = airline#section#create_right(['hunks'])
+  let g:airline_section_y = airline#section#create_right(['branch'])
+  let g:airline_section_z = airline#section#create_right(['%c'])
 endfunction
+autocmd User AirlineAfterInit call AirlineInit()
 
 let g:airline_mode_map = {
   \ '__' : '-',
@@ -460,3 +475,8 @@ let g:airline_mode_map = {
   \ 'S'  : 'S',
   \ '' : 'S',
   \ }
+
+if has('nvim')
+  " Shougo/deoplete.nvim
+  let g:deoplete#enable_at_startup = 1
+endif

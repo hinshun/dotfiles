@@ -133,7 +133,7 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-bindsym $mod+shift+x exec i3lock
+bindsym $mod+shift+x exec "scrot /tmp/i3lock.png; i3lock -p default -u -i /tmp/i3lock.png"
 
 bindsym XF86MonBrightnessUp exec xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec xbacklight -dec 10
