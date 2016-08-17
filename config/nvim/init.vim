@@ -1,3 +1,13 @@
+" Turn on automatic indentation
+filetype plugin indent on
+
+" Enable syntax
+" test
+syntax enable
+
+" Enable modelines
+set modelines=2
+
 "===============================================================================
 " Plugins
 "===============================================================================
@@ -27,6 +37,10 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 if v:version >= 703
   Plug 'junegunn/vim-after-object'
+endif
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'zchee/deoplete-go', { 'do': 'make'}
 endif
 
 " Browsing
@@ -181,7 +195,7 @@ set diffopt=filler,vertical
 set grepformat=%f:%l:%c:%m,%f:%l:%m
 
 " Insert mode completion
-set completeopt=menuone,preview,longest
+set completeopt=menuone,longest,noselect
 
 " Enable wild menu
 set wildmode=list:longest,full
@@ -378,11 +392,6 @@ augroup auglobal
   autocmd BufEnter * if (winnr("$") == 1
         \ && exists("b:NERDTreeType") && b:NERDTreeType == "primary")
         \ | q | endif
-
-  " Initialize Airline sections
-  if exists('airline')
-    autocmd VimEnter * call AirlineInit()
-  end
 augroup END
 
 "===============================================================================
@@ -401,6 +410,11 @@ let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 let g:go_list_type = "quickfix"
+
+" SirVer/ultisnips
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
 " lokaltog/vim-easymotion
 map <Leader> <Plug>(easymotion-prefix)
@@ -428,7 +442,9 @@ let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
 
 " hinshun/fzf.vim
-let $FZF_DEFAULT_COMMAND = 'ag -l --ignore goartifacts -g ""'
+" let $FZF_DEFAULT_COMMAND = 'ag -l --ignore goartifacts -g ""'
+let g:fzf_layout = { 'window': '-tabnew' }
+" let g:fzf_layout = { 'window': 'enew' }
 command! Plugs call fzf#run({
   \ 'source':  map(sort(keys(g:plugs)), 'g:plug_home."/".v:val'),
   \ 'options': '--delimiter / --nth -1',
@@ -437,14 +453,15 @@ command! Plugs call fzf#run({
 
 " bling/vim-airline
 let g:airline_powerline_fonts = 1
-
 function! AirlineInit()
-  let g:airline_section_b = airline#section#create_left(['%t'])
-  let g:airline_section_c = airline#section#create([''])
-  let g:airline_section_x = airline#section#create_right([''])
-  let g:airline_section_y = airline#section#create_right(['%c'])
-  let g:airline_section_z = airline#section#create_right(['branch'])
+  let g:airline_section_a = airline#section#create_left(['mode'])
+  let g:airline_section_b = airline#section#create_left(['filetype'])
+  let g:airline_section_c = airline#section#create_left(['%f'])
+  let g:airline_section_x = airline#section#create_right(['hunks'])
+  let g:airline_section_y = airline#section#create_right(['branch'])
+  let g:airline_section_z = airline#section#create_right(['%c'])
 endfunction
+autocmd User AirlineAfterInit call AirlineInit()
 
 let g:airline_mode_map = {
   \ '__' : '-',
@@ -459,3 +476,8 @@ let g:airline_mode_map = {
   \ 'S'  : 'S',
   \ '' : 'S',
   \ }
+
+if has('nvim')
+  " Shougo/deoplete.nvim
+  let g:deoplete#enable_at_startup = 1
+endif
