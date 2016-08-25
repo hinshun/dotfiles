@@ -1,6 +1,10 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_cnt =8
 let g:netrw_dirhist_1='/home/edgar/.vim/plugged/fzf.vim/autoload/fzf'
 let g:netrw_dirhist_2='/home/edgar/.vim/plugged/fzf.vim'
 let g:netrw_dirhist_3='/home/edgar/.vim/plugged/fzf.vim/autoload'
 let g:netrw_dirhist_4='/home/edgar/.vim/plugged/fzf.vim/autoload/fzf'
+let g:netrw_dirhist_5='/home/edgar/.zprezto'
+let g:netrw_dirhist_6='/home/edgar/gopath/src/github.com/docker/dhe-deploy/ha-integration'
+let g:netrw_dirhist_7='/home/edgar/gopath/src/github.com/docker/dhe-deploy/.git'
+let g:netrw_dirhist_8='/home/edgar/gopath/src/github.com/docker/dhe-deploy/integration'

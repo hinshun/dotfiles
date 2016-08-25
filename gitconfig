@@ -1,9 +1,12 @@
 [user]
   name = Edgar Lee
   email = edgar.lee@docker.com
+  signingkey = 5437A4D4
 [core]
-  editor = vim
+  editor = nvim
   excludesfile = /home/.gitignore
   pager = less
 [push]
   default = simple
+[commit]
+  gpgsign = true
