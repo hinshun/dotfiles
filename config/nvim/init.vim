@@ -2,7 +2,6 @@
 filetype plugin indent on
 
 " Enable syntax
-" test
 syntax enable
 
 " Enable modelines
@@ -288,18 +287,28 @@ nnoremap <silent> <leader>z :call <sid>zoom()<cr>
 " <Leader>c: Close quickfix window
 nnoremap <leader>c :cclose<bar>lclose<cr>
 
+" <Leader>or: Run go file
 au FileType go nmap <leader>or <Plug>(go-run)
-au FileType go nmap <leader>ob <Plug>(go-build)
-au FileType go nmap <leader>ot <Plug>(go-test)
-au FileType go nmap <leader>oc <Plug>(go-coverage)
 
+" <Leader>ob: Build go file
+au FileType go nmap <leader>ob <Plug>(go-build)
+
+" <Leader>ot: Test go file
+au FileType go nmap <leader>ot <Plug>(go-test)
+
+" <Leader>od: Jump to go definition
 au FileType go nmap <Leader>od <Plug>(go-def)
+
+" <Leader>oc: Jump to go doc
 au FileType go nmap <Leader>oc <Plug>(go-doc-vertical)
 
+" <Leader>os: List go interfaces that struct implements
 au FileType go nmap <Leader>os <Plug>(go-implements)
 
+" <Leader>oi: Show go signature and type
 au FileType go nmap <Leader>oi <Plug>(go-info)
 
+" <Leader>oe: Refactor go name
 au FileType go nmap <Leader>oe <Plug>(go-rename)
 
 "===============================================================================
