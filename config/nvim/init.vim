@@ -32,8 +32,8 @@ Plug 'junegunn/vim-fnr'
 Plug 'junegunn/vim-pseudocl'
 Plug 'junegunn/vim-peekaboo'
 Plug 'ConradIrwin/vim-bracketed-paste'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+" Plug 'SirVer/ultisnips'
+" Plug 'honza/vim-snippets'
 if v:version >= 703
   Plug 'junegunn/vim-after-object'
 endif
@@ -208,6 +208,9 @@ set nrformats=hex
 
 " Enable mouse
 set mouse=a
+
+" Enable relative line numbers
+set relativenumber
 
 " Temporary files
 set backupdir=/tmp/vim//,.

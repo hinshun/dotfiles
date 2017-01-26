@@ -1,9 +1,3 @@
-bin/docker-versions/docker*
-bin/docker
-config/google-chrome/
-config/chromium/
-config/keybase/
-config/Keybase/
-config/htop/
-config/Slack/
-config/pulse/
+bin
+config
+i3/*.png

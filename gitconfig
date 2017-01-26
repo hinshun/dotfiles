@@ -4,9 +4,12 @@
   signingkey = 5437A4D4
 [core]
   editor = nvim
+  autocrlf = input
   excludesfile = /home/.gitignore
   pager = less
 [push]
   default = simple
 [commit]
   gpgsign = true
+[url "git@github.com:"]
+  insteadOf = https://github.com/
