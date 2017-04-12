@@ -38,8 +38,8 @@ if v:version >= 703
   Plug 'junegunn/vim-after-object'
 endif
 if has('nvim')
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'zchee/deoplete-go', { 'do': 'make'}
+  " Plug 'Shougo/deoplete.nvim'
+  " Plug 'zchee/deoplete-go', { 'do': 'make'}
 endif
 
 " Browsing
@@ -59,6 +59,7 @@ Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
+Plug 'jparise/vim-graphql'
 
 " Lint
 Plug 'scrooloose/syntastic'
@@ -259,8 +260,8 @@ nnoremap <leader>ps :PlugStatus<cr>
 " <Leader>nt: Toggle file system explorer
 nnoremap <Leader>nt :NERDTreeToggle<cr>
 
-" <Leader>ag: Fast content searching
-nnoremap <Leader>ag :Ag<space>
+" <Leader>rg: Fast content searching
+nnoremap <Leader>rg :Rg<space>
 
 " <Leader>ge: Git edit
 nnoremap <Leader>ge :Gedit<CR>
@@ -413,7 +414,7 @@ augroup END
 " scrooloose/nerdtree
 let NERDTreeShowBookmarks = 1
 let NERDTreeShowHidden = 1
-let NERDTreeIgnore = ['\~$', '\.swp$', '\.git', '\.hg', '\.svn', '\.bzr']
+let NERDTreeIgnore = ['\~$', '\.swp$', '\.hg', '\.svn', '\.bzr']
 
 " scrooloose/syntastic
 let g:syntastic_check_on_open = 1
@@ -454,7 +455,7 @@ let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
 
 " hinshun/fzf.vim
-" let $FZF_DEFAULT_COMMAND = 'ag -l --ignore goartifacts -g ""'
+let FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
 let g:fzf_layout = { 'window': '-tabnew' }
 " let g:fzf_layout = { 'window': 'enew' }
 command! Plugs call fzf#run({

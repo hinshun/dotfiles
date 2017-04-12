@@ -168,3 +168,4 @@ bar {
 
 exec xrdb -merge ~/.Xresources
 exec /usr/bin/pasystray
+exec feh --bg-scale ~/.wallpaper
