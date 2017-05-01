@@ -49,20 +49,20 @@ passwd
 vi /etc/mkinitcpio.conf
 # HOOKS="... filesystems ..."
 # add `encrypt lvm2` before `filesystems`
-mkinitcpio -p linux
 
 ### Systemd
 
-pacman -S sudo
-sudo bootctl install
+pacman -S sudo nvidia
+bootctl install
 vi /boot/loader/loader.conf
 # default arch
 vi /boot/loader/entries/arch.conf
 # title Arch Linux
 # linux /vmlinuz-linux
 # initrd /initramfs-linux.img
-# options root=/dev/mapper/blank rw cryptdevice=/dev/nvme0n1p2:blank quiet
-sudo bootctl update
+# options root=/dev/mapper/blank rw cryptdevice=/dev/nvme0n1p2:blank quiet nvidia-drm.modeset=1
+bootctl update
+mkinitcpio -p linux
 
 pacman -S iw ifplugd networkmanager wpa_supplicant zsh
 systemctl enable NetworkManager
@@ -74,8 +74,40 @@ gpasswd -a edgar video
 vi /etc/sudoers
 # Add edgar to sudoers
 
-### Reboot
+### Reboot, login as edgar
 
-pacman -S ntp
-systemctl enable ntpd
-systemctl start ntpd
+sudo pacman -S ntp
+sudo systemctl enable ntpd
+sudo systemctl start ntpd
+
+### WLC
+
+git clone https://github.com/Cloudef/wlc
+git submodule update --init --recursive
+mkdir target
+cd target
+cmake -DCMAKE_BUILD_TYPE=Upstream ..
+make
+
+# Test it out (Ctrl-Esc to quit)
+./example/example
+
+sudo make install
+
+### Sway
+
+vi .zshenv # Add wlc to path
+# export LD_LIBRARY_PATH=/usr/local/lib64
+
+git clone https://github.com/Cloudef/sway
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_SYSCONFDIR=/etc ..
+make
+sudo make install
+
+vi .zlogin
+# if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+#   nvidia-modprobe -u
+#   exec sway
+# fi
