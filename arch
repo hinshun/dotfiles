@@ -1,0 +1,81 @@
+#
+# Dell Precision 5520 - April, 2017
+# Linux archiso 4.10.6-1
+#
+
+### Boot drive
+dd bs=4M if=/path/to/archlinux.iso of=/dev/sdx status=progress && sync
+
+### Partition
+
+gdisk /dev/nvme0n1
+# nvme0n1p1: +512M, EF00 - /boot
+# nvme0n1p2: -100G, 8E00 - encrypted LVM
+
+### Encrypt
+
+cryptsetup luksFormat /dev/nvme0n1p2
+
+### Filesystems
+
+cryptsetup open /dev/nvme0n1p2 blank
+mkfs.ext4 /dev/mapper/blank
+mkfs.fat -F32 /dev/nvme0n1p1
+
+### Mount
+
+mount /dev/mapper/blank /mnt
+mkdir /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot
+
+### Bootstrap
+
+pacstrap /mnt base
+genfstab -U -p /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+echo triforce > /etc/hostname
+rm /etc/localtime
+ln -s /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+echo 'LANG="en_US.UTF-8"' > /etc/locale.conf
+echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
+
+locale-gen
+passwd
+
+### Boot
+
+vi /etc/mkinitcpio.conf
+# HOOKS="... filesystems ..."
+# add `encrypt lvm2` before `filesystems`
+mkinitcpio -p linux
+
+### Systemd
+
+pacman -S sudo
+sudo bootctl install
+vi /boot/loader/loader.conf
+# default arch
+vi /boot/loader/entries/arch.conf
+# title Arch Linux
+# linux /vmlinuz-linux
+# initrd /initramfs-linux.img
+# options root=/dev/mapper/blank rw cryptdevice=/dev/nvme0n1p2:blank quiet
+sudo bootctl update
+
+pacman -S iw ifplugd networkmanager wpa_supplicant zsh
+systemctl enable NetworkManager
+systemctl enable ifplugd@enp0s25
+
+useradd -m -s /usr/bin/zsh edgar
+passwd edgar
+gpasswd -a edgar video
+vi /etc/sudoers
+# Add edgar to sudoers
+
+### Reboot
+
+pacman -S ntp
+systemctl enable ntpd
+systemctl start ntpd
