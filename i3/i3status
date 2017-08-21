@@ -7,18 +7,15 @@
 # If the above line is not correctly displayed, fix your editor first!
 
 general {
-	colors = true
-	color_good = "#51ca7e" color_degraded = "#fbd25d"
-	color_bad = "#de8f91"
-	interval = 10
+  colors = true
+  color_good = "#98c373" color_degraded = "#d19966"
+  color_bad = "#c95b69"
+  interval = 10
 }
 
 order += "volume master"
-order += "disk /var"
-order += "disk /tmp"
-order += "disk /home"
+order += "disk /"
 order += "run_watch dockerd"
-order += "run_watch DHCP"
 order += "run_watch VPN"
 order += "wireless wlp58s0"
 order += "battery 0"
@@ -27,51 +24,39 @@ order += "cpu_temperature 0"
 order += "tztime local"
 
 volume master {
-	format    = "♪: %volume"
-	device    = "pulse:0"
-	mixer     = "Master"
-	mixer_idx = 0
+  format    = "♪: %volume"
+  device    = "pulse:0"
+  mixer     = "Master"
+  mixer_idx = 0
 }
 
 wireless wlp58s0 {
-	format_up   = "W: (%quality at %essid)"
-	format_down = "W: down"
+  format_up   = "W (%quality at %essid)"
+  format_down = "W down"
 }
 
 battery 0 {
-	format = "%status %percentage"
-	path   = "/sys/class/power_supply/BAT0/uevent"
-}
-
-run_watch DHCP {
-	pidfile = "/var/run/dhclient*.pid"
+  format = "%status %percentage"
+  path   = "/sys/class/power_supply/BAT0/uevent"
 }
 
 run_watch dockerd {
-	pidfile = "/var/run/docker.pid"
+  pidfile = "/var/run/docker.pid"
 }
 
 tztime local {
   format = "%a %m-%d %H:%M"
-	timezone = "US/Pacific"
+  timezone = "US/Pacific"
 }
 
 cpu_usage {
-	format = "CPU %usage"
+  format = "CPU %usage"
 }
 
 cpu_temperature 0 {
-	format = "T %degrees °C"
+  format = "T %degrees°C"
 }
 
-disk "/var" {
-	format = "/var %percentage_used"
-}
-
-disk "/tmp" {
-	format = "/tmp %percentage_used"
-}
-
-disk "/home" {
-	format = "/home %percentage_used"
+disk "/" {
+  format = "/ %percentage_used"
 }

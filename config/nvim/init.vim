@@ -14,7 +14,7 @@ set modelines=2
 silent! if plug#begin('~/.vim/plugged')
 
 " Colors
-Plug 'hinshun/vim-tomorrow-theme'
+Plug 'hinshun/color.vim'
 
 " Status
 Plug 'vim-airline/vim-airline'
@@ -38,19 +38,21 @@ if v:version >= 703
   Plug 'junegunn/vim-after-object'
 endif
 if has('nvim')
+  " Plug 'nsf/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
   " Plug 'Shougo/deoplete.nvim'
   " Plug 'zchee/deoplete-go', { 'do': 'make'}
 endif
 
 " Browsing
 Plug 'junegunn/fzf', { 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+Plug 'hinshun/fzf.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
 Plug 'bogado/file-line'
 
 " Git
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'junegunn/gv.vim'
 Plug 'airblade/vim-gitgutter'
 
@@ -78,7 +80,10 @@ set shell=/bin/zsh
 set shortmess+=I
 
 " Enable 256 colors
-set t_Co=256
+" set t_Co=256
+
+" Enable true colors
+set termguicolors
 
 " Always show statusline
 set laststatus=2
@@ -87,7 +92,7 @@ set laststatus=2
 set encoding=utf-8
 
 " Init colorscheme
-silent! colorscheme Tomorrow-Night
+silent! colorscheme hinshun
 
 " Turn on line number
 set number
@@ -172,8 +177,11 @@ set synmaxcol=1000
 " 80 chars/line
 set textwidth=0
 if exists('&colorcolumn')
-  set colorcolumn=80
+  " set colorcolumn=80
 endif
+
+" Set status line to be only airline
+set cmdheight=1
 
 " Don't redraw when not needed
 set lazyredraw
@@ -182,8 +190,8 @@ set lazyredraw
 set showcmd
 
 " Highlight unwanted characters
-set list
-set listchars=tab:\|\ ,
+" set list
+" set listchars=tab:\|\ ,
 
 " Add no extra spaces when joining lines ending with punctuation
 set nojoinspaces
@@ -341,7 +349,7 @@ xnoremap <silent> <C-l> >gv
 " ]q: Next quickfix
 nnoremap ]q :cnext<cr>zz
 
-" [q: Next quickfix
+" [q: Previous quickfix
 nnoremap [q :cprev<cr>zz
 
 " ]b: Next buffer
@@ -411,6 +419,35 @@ augroup END
 " Plugin Settings
 "===============================================================================
 
+" bling/vim-airline
+" let g:airline_powerline_fonts = 1
+let g:airline_theme='hinshun'
+function! AirlineInit()
+  let g:airline_section_a = airline#section#create_left(['mode'])
+  let g:airline_section_b = airline#section#create_left(['filetype'])
+  let g:airline_section_c = airline#section#create_left(['%f'])
+  " let g:airline_section_x = airline#section#create_right(['hunks'])
+  " let g:airline_section_y = airline#section#create_right(['branch'])
+  let g:airline_section_z = airline#section#create_right(['%c'])
+  let g:airline_section_error = airline#section#create_right(['syntastic'])
+  let g:airline_section_warning = airline#section#create_right(['whitespace'])
+endfunction
+autocmd User AirlineAfterInit call AirlineInit()
+
+let g:airline_mode_map = {
+  \ '__' : '-',
+  \ 'n'  : 'N',
+  \ 'i'  : 'I',
+  \ 'R'  : 'R',
+  \ 'c'  : 'C',
+  \ 'v'  : 'V',
+  \ 'V'  : 'V-L',
+  \ '' : 'V-B',
+  \ 's'  : 'S',
+  \ 'S'  : 'S',
+  \ '' : 'S',
+  \ }
+
 " scrooloose/nerdtree
 let NERDTreeShowBookmarks = 1
 let NERDTreeShowHidden = 1
@@ -463,32 +500,6 @@ command! Plugs call fzf#run({
   \ 'options': '--delimiter / --nth -1',
   \ 'down':    '~40%',
   \ 'sink':    'Explore'})
-
-" bling/vim-airline
-let g:airline_powerline_fonts = 1
-function! AirlineInit()
-  let g:airline_section_a = airline#section#create_left(['mode'])
-  let g:airline_section_b = airline#section#create_left(['filetype'])
-  let g:airline_section_c = airline#section#create_left(['%f'])
-  let g:airline_section_x = airline#section#create_right(['hunks'])
-  let g:airline_section_y = airline#section#create_right(['branch'])
-  let g:airline_section_z = airline#section#create_right(['%c'])
-endfunction
-autocmd User AirlineAfterInit call AirlineInit()
-
-let g:airline_mode_map = {
-  \ '__' : '-',
-  \ 'n'  : 'N',
-  \ 'i'  : 'I',
-  \ 'R'  : 'R',
-  \ 'c'  : 'C',
-  \ 'v'  : 'V',
-  \ 'V'  : 'V-L',
-  \ '' : 'V-B',
-  \ 's'  : 'S',
-  \ 'S'  : 'S',
-  \ '' : 'S',
-  \ }
 
 if has('nvim')
   " Shougo/deoplete.nvim
