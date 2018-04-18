@@ -1,7 +1,6 @@
 [user]
   name = Edgar Lee
-  email = edgar.lee@docker.com
-  signingkey = 5437A4D4
+  email = edgarl@netflix.com
 [core]
   editor = nvim
   autocrlf = input
@@ -9,12 +8,5 @@
   pager = less
 [push]
   default = simple
-[commit]
-  gpgsign = true
 [url "git@github.com:"]
   insteadOf = https://github.com/
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true

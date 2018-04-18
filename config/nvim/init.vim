@@ -44,7 +44,7 @@ if has('nvim')
 endif
 
 " Browsing
-Plug 'junegunn/fzf', { 'do': './install --all' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'hinshun/fzf.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
@@ -374,7 +374,7 @@ inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current --scroll
 " Functions
 "===============================================================================
 
-function! s:zoom()
+function! s:zoom() dict
   if winnr('$') > 1
     tab split
   elseif len(filter(map(range(tabpagenr('$')), 'tabpagebuflist(v:val + 1)'),
