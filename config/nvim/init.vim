@@ -374,7 +374,7 @@ inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current --scroll
 " Functions
 "===============================================================================
 
-function! s:zoom() dict
+function! s:zoom()
   if winnr('$') > 1
     tab split
   elseif len(filter(map(range(tabpagenr('$')), 'tabpagebuflist(v:val + 1)'),
