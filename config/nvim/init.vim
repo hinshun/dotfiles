@@ -18,7 +18,6 @@ Plug 'hinshun/color.vim'
 
 " Status
 Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 
 " Edit
 Plug 'tpope/vim-repeat'
@@ -64,7 +63,10 @@ Plug 'honza/dockerfile.vim'
 Plug 'jparise/vim-graphql'
 
 " Lint
-Plug 'scrooloose/syntastic'
+" Plug 'scrooloose/syntastic'
+
+" Debug
+Plug 'sebdah/vim-delve'
 
 call plug#end()
 endif
@@ -212,14 +214,15 @@ set wildmenu
 " Keep cursor on same column
 set nostartofline
 
+" Prevent windows scrolling together
+set nocursorbind
+set noscrollbind
+
 " Enable numerical addition/subtraction for hexadecimals
 set nrformats=hex
 
 " Enable mouse
 set mouse=a
-
-" Enable relative line numbers
-set relativenumber
 
 " Temporary files
 set backupdir=/tmp/vim//,.
@@ -262,9 +265,6 @@ nnoremap <silent> <Leader><Enter> :Buffers<CR>
 " <Leader>pi: Installs Plugins
 nnoremap <Leader>pi :PlugInstall<cr>
 
-" <Leader>ps: Displays the status of Plugins
-nnoremap <leader>ps :PlugStatus<cr>
-
 " <Leader>nt: Toggle file system explorer
 nnoremap <Leader>nt :NERDTreeToggle<cr>
 
@@ -299,6 +299,9 @@ nnoremap <silent> <leader>z :call <sid>zoom()<cr>
 " <Leader>c: Close quickfix window
 nnoremap <leader>c :cclose<bar>lclose<cr>
 
+" <Leader>nl: Remove search highlighting
+nnoremap <leader>nl :nohlsearch<CR>
+
 " <Leader>or: Run go file
 au FileType go nmap <leader>or <Plug>(go-run)
 
@@ -312,16 +315,19 @@ au FileType go nmap <leader>ot <Plug>(go-test)
 au FileType go nmap <Leader>od <Plug>(go-def)
 
 " <Leader>oc: Jump to go doc
-au FileType go nmap <Leader>oc <Plug>(go-doc-vertical)
+au FileType go nmap <Leader>oc <Plug>(go-doc-split)
 
-" <Leader>os: List go interfaces that struct implements
-au FileType go nmap <Leader>os <Plug>(go-implements)
+" <Leader>om: List go interfaces that struct implements
+au FileType go nmap <Leader>om <Plug>(go-implements)
 
 " <Leader>oi: Show go signature and type
 au FileType go nmap <Leader>oi <Plug>(go-info)
 
-" <Leader>oe: Refactor go name
-au FileType go nmap <Leader>oe <Plug>(go-rename)
+" <Leader>on: Refactor go name
+au FileType go nmap <Leader>on <Plug>(go-rename)
+
+" <Leader>op: Automatically import go packages
+au FileType go nmap <Leader>op <Plug>(go-imports)
 
 "===============================================================================
 " Non-leader Key Mappings
@@ -361,14 +367,8 @@ nnoremap [b :bprev<cr>
 " <C-x><C-f>: Autocomplete from paths in pwd
 imap <C-x><C-f> <plug>(fzf-complete-path)
 
-" <C-x><C-j>: Autocomplete from files in pwd
-imap <C-x><C-j> <plug>(fzf-complete-file-ag)
-
 " <C-x><C-l>: Autocomplete from lines in buffers
 imap <C-x><C-l> <plug>(fzf-complete-line)
-
-" <C-x><C-l>: Autocomplete from visible tmux
-inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current --scroll 500 --min 5')
 
 "===============================================================================
 " Functions
@@ -429,7 +429,7 @@ function! AirlineInit()
   " let g:airline_section_x = airline#section#create_right(['hunks'])
   " let g:airline_section_y = airline#section#create_right(['branch'])
   let g:airline_section_z = airline#section#create_right(['%c'])
-  let g:airline_section_error = airline#section#create_right(['syntastic'])
+  " let g:airline_section_error = airline#section#create_right(['syntastic'])
   let g:airline_section_warning = airline#section#create_right(['whitespace'])
 endfunction
 autocmd User AirlineAfterInit call AirlineInit()
@@ -493,8 +493,10 @@ let g:go_highlight_build_constraints = 1
 
 " hinshun/fzf.vim
 let FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
-let g:fzf_layout = { 'window': '-tabnew' }
-" let g:fzf_layout = { 'window': 'enew' }
+" let g:fzf_layout = { 'window': '-tabnew' }
+let g:fzf_layout = { 'window': 'enew' }
+let g:fzf_colors =
+\ { 'bg':     ['bg', 'Normal'] }
 command! Plugs call fzf#run({
   \ 'source':  map(sort(keys(g:plugs)), 'g:plug_home."/".v:val'),
   \ 'options': '--delimiter / --nth -1',

@@ -10,3 +10,5 @@
   default = simple
 [url "git@github.com:"]
   insteadOf = https://github.com/
+[url "ssh://git@stash.corp.netflix.com:7999/"]
+    insteadOf = https://stash.corp.netflix.com/scm/
