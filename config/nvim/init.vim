@@ -25,29 +25,15 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-commentary'
 Plug 'lokaltog/vim-easymotion'
-Plug 'junegunn/vim-easy-align'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle'   }
 Plug 'junegunn/vim-fnr'
 Plug 'junegunn/vim-pseudocl'
-Plug 'junegunn/vim-peekaboo'
 Plug 'ConradIrwin/vim-bracketed-paste'
-" Plug 'SirVer/ultisnips'
-" Plug 'honza/vim-snippets'
-if v:version >= 703
-  Plug 'junegunn/vim-after-object'
-endif
-if has('nvim')
-  " Plug 'nsf/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
-  " Plug 'Shougo/deoplete.nvim'
-  " Plug 'zchee/deoplete-go', { 'do': 'make'}
-endif
 
 " Browsing
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'hinshun/fzf.vim'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'Yggdroot/indentLine', { 'on': 'IndentLinesEnable' }
-Plug 'bogado/file-line'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -61,12 +47,6 @@ Plug 'pangloss/vim-javascript'
 Plug 'plasticboy/vim-markdown'
 Plug 'honza/dockerfile.vim'
 Plug 'jparise/vim-graphql'
-
-" Lint
-" Plug 'scrooloose/syntastic'
-
-" Debug
-Plug 'sebdah/vim-delve'
 
 call plug#end()
 endif
@@ -453,32 +433,10 @@ let NERDTreeShowBookmarks = 1
 let NERDTreeShowHidden = 1
 let NERDTreeIgnore = ['\~$', '\.swp$', '\.hg', '\.svn', '\.bzr']
 
-" scrooloose/syntastic
-let g:syntastic_check_on_open = 1
-let g:syntastic_cpp_check_header = 1
-let g:syntastic_html_tidy_quiet_messages = { "level" : "warnings" }
-let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-let g:go_list_type = "quickfix"
-
-" SirVer/ultisnips
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-
 " lokaltog/vim-easymotion
 map <Leader> <Plug>(easymotion-prefix)
 let g:EasyMotion_keys = 'abcdefghijklmnopqrstuvwxyz'
 hi link EasyMotionShade  Comment
-
-" junegunn/vim-easy-align
-vmap <Enter> <Plug>(EasyAlign)
-nmap ga <Plug>(EasyAlign)
-
-" junegunn/vim-after-object
-silent! if has_key(g:plugs, 'vim-after-object')
-  autocmd VimEnter * silent! call after_object#enable('=', ':', '#', ' ', '|')
-endif
 
 " mbbill/undotree
 let g:undotree_WindowLayout = 2
@@ -502,8 +460,3 @@ command! Plugs call fzf#run({
   \ 'options': '--delimiter / --nth -1',
   \ 'down':    '~40%',
   \ 'sink':    'Explore'})
-
-if has('nvim')
-  " Shougo/deoplete.nvim
-  let g:deoplete#enable_at_startup = 1
-endif
