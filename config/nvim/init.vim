@@ -1,9 +1,3 @@
-" Turn on automatic indentation
-filetype plugin indent on
-
-" Enable syntax
-syntax enable
-
 " Enable modelines
 set modelines=2
 
@@ -41,12 +35,12 @@ Plug 'tpope/vim-rhubarb'
 Plug 'junegunn/gv.vim'
 Plug 'airblade/vim-gitgutter'
 
-" Lang
-Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-Plug 'pangloss/vim-javascript'
-Plug 'plasticboy/vim-markdown'
-Plug 'honza/dockerfile.vim'
-Plug 'jparise/vim-graphql'
+" LSP
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 call plug#end()
 endif
@@ -61,14 +55,8 @@ set shell=/bin/zsh
 " Avoid hit-enter prompts & splash screen
 set shortmess+=I
 
-" Enable 256 colors
-" set t_Co=256
-
 " Enable true colors
 set termguicolors
-
-" Always show statusline
-set laststatus=2
 
 " Enable unicode
 set encoding=utf-8
@@ -87,9 +75,6 @@ set splitright
 set vb
 set t_vb=
 
-" Lower the delay of escaping out of other modes
-set timeoutlen=200
-
 " Turn backup off
 set nobackup
 set nowritebackup
@@ -97,9 +82,6 @@ set noswapfile
 
 " Highlight current line cursor is on
 set cursorline
-
-" Set to auto read when a file is changed from the outside
-set autoread
 
 " Minimal number of screen lines to keep above and below the cursor
 set scrolloff=5
@@ -115,18 +97,9 @@ set foldlevelstart=99 " start folding for level
 " Allow changing buffer without saving it first
 set hidden
 
-" Set backspace config
-set backspace=eol,start,indent
-
 " Case insensitive search
 set ignorecase
 set smartcase
-
-" Incremental search
-set incsearch
-
-" Highlight search
-set hlsearch
 
 " Make regex a little easier to type
 set magic
@@ -139,10 +112,8 @@ set tabstop=2     " width of tab
 set shiftwidth=2  " shifting >>, <<, ==
 set softtabstop=2 " tab key <TAB>, <BS>
 set expandtab     " always use softtabstop for <TAB>
-set smarttab
 
 " Indent options
-set autoindent
 set smartindent
 set linebreak
 
@@ -156,24 +127,11 @@ set virtualedit=block
 " Reduce syntax searching in long column lines
 set synmaxcol=1000
 
-" 80 chars/line
-set textwidth=0
-if exists('&colorcolumn')
-  " set colorcolumn=80
-endif
-
 " Set status line to be only airline
 set cmdheight=1
 
 " Don't redraw when not needed
 set lazyredraw
-
-" Show keystrokes in buffer
-set showcmd
-
-" Highlight unwanted characters
-" set list
-" set listchars=tab:\|\ ,
 
 " Add no extra spaces when joining lines ending with punctuation
 set nojoinspaces
@@ -187,10 +145,6 @@ set grepformat=%f:%l:%c:%m,%f:%l:%m
 " Insert mode completion
 set completeopt=menuone,longest,noselect
 
-" Enable wild menu
-set wildmode=list:longest,full
-set wildmenu
-
 " Keep cursor on same column
 set nostartofline
 
@@ -198,33 +152,11 @@ set nostartofline
 set nocursorbind
 set noscrollbind
 
-" Enable numerical addition/subtraction for hexadecimals
-set nrformats=hex
-
 " Enable mouse
 set mouse=a
 
-" Temporary files
-set backupdir=/tmp/vim//,.
-set directory=/tmp/vim//,.
-if v:version >= 703
-  set undodir=/tmp/vim//,.
-endif
-
-if has('patch-7.3.541')
-  set formatoptions+=j
-endif
-
-if has('patch-7.4.338')
-  let &showbreak = '↳ '
-  set breakindent
-  set breakindentopt=sbr
-endif
-
-if !has('nvim')
-  " Use blowfish2 encryption for buffers written to file
-  set cryptmethod=blowfish2
-endif
+" Enable sign columns
+set signcolumn=yes
 
 "===============================================================================
 " Leader Key Mappings
@@ -269,6 +201,9 @@ nnoremap <Leader>gc :Commits<CR>
 " <Leader>gl: Git commits on current file
 nnoremap <Leader>gl :BCommits<CR>
 
+" <Leader>gl: Git commits on current visual selection
+xmap <Leader>gl :GV!<CR>
+
 " <Leader>r: Find n' Replace
 nmap <Leader>r <Plug>(FNR%)
 xmap <Leader>r <Plug>(FNR)
@@ -282,32 +217,29 @@ nnoremap <leader>c :cclose<bar>lclose<cr>
 " <Leader>nl: Remove search highlighting
 nnoremap <leader>nl :nohlsearch<CR>
 
-" <Leader>or: Run go file
-au FileType go nmap <leader>or <Plug>(go-run)
+" <Leader>od: Goto definition under cursor
+nnoremap <silent> <Leader>od :call LanguageClient#textDocument_definition()<CR>
 
-" <Leader>ob: Build go file
-au FileType go nmap <leader>ob <Plug>(go-build)
+" <Leader>ot: Goto type definition under cursor
+nnoremap <silent> <Leader>ot :call LanguageClient#textDocument_typeDefinition()<CR>
 
-" <Leader>ot: Test go file
-au FileType go nmap <leader>ot <Plug>(go-test)
+" <Leader>oi: Goto implementation under cursor
+nnoremap <silent> <Leader>oi :call LanguageClient#textDocument_implementation()<CR>
 
-" <Leader>od: Jump to go definition
-au FileType go nmap <Leader>od <Plug>(go-def)
+" <Leader>oh: Show type info (and short doc) of identifier under cursor
+nnoremap <silent> <Leader>oh :call LanguageClient#textDocument_hover()<CR>
 
-" <Leader>oc: Jump to go doc
-au FileType go nmap <Leader>oc <Plug>(go-doc-split)
+" <Leader>os: List of current buffer's symbols
+nnoremap <silent> <Leader>os :call LanguageClient#textDocument_documentSymbol()<CR>
 
-" <Leader>om: List go interfaces that struct implements
-au FileType go nmap <Leader>om <Plug>(go-implements)
+" <Leader>or: List all references of identifier under cursor
+nnoremap <silent> <Leader>or :call LanguageClient#textDocument_references()<CR>
 
-" <Leader>oi: Show go signature and type
-au FileType go nmap <Leader>oi <Plug>(go-info)
+" <Leader>of: Format current document
+nnoremap <silent> <Leader>of :call LanguageClient#textDocument_formatting()<CR>
 
-" <Leader>on: Refactor go name
-au FileType go nmap <Leader>on <Plug>(go-rename)
-
-" <Leader>op: Automatically import go packages
-au FileType go nmap <Leader>op <Plug>(go-imports)
+" <Leader>on: Rename identifier under cursor
+nnoremap <silent> <Leader>on :call LanguageClient#textDocument_rename()<CR>
 
 "===============================================================================
 " Non-leader Key Mappings
@@ -371,10 +303,6 @@ augroup auglobal
   " File types
   au BufNewFile,BufRead Dockerfile*         set filetype=dockerfile
 
-  " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
-  au BufNewFile,BufRead,InsertLeave * silent! match ExtraWhitespace /\s\+$/
-  au InsertEnter * silent! match ExtraWhitespace /\s\+\%#\@<!$/
-
   " Wrap lines in QuickFix buffer so that characters will not get lost
   autocmd bufenter * if &buftype == 'quickfix' | setlocal wrap | endif
   autocmd BufWinEnter * if &buftype == 'quickfix' | setlocal wrap | endif
@@ -400,16 +328,12 @@ augroup END
 "===============================================================================
 
 " bling/vim-airline
-" let g:airline_powerline_fonts = 1
 let g:airline_theme='hinshun'
 function! AirlineInit()
   let g:airline_section_a = airline#section#create_left(['mode'])
   let g:airline_section_b = airline#section#create_left(['filetype'])
   let g:airline_section_c = airline#section#create_left(['%f'])
-  " let g:airline_section_x = airline#section#create_right(['hunks'])
-  " let g:airline_section_y = airline#section#create_right(['branch'])
   let g:airline_section_z = airline#section#create_right(['%c'])
-  " let g:airline_section_error = airline#section#create_right(['syntastic'])
   let g:airline_section_warning = airline#section#create_right(['whitespace'])
 endfunction
 autocmd User AirlineAfterInit call AirlineInit()
@@ -431,7 +355,6 @@ let g:airline_mode_map = {
 " scrooloose/nerdtree
 let NERDTreeShowBookmarks = 1
 let NERDTreeShowHidden = 1
-let NERDTreeIgnore = ['\~$', '\.swp$', '\.hg', '\.svn', '\.bzr']
 
 " lokaltog/vim-easymotion
 map <Leader> <Plug>(easymotion-prefix)
@@ -440,14 +363,6 @@ hi link EasyMotionShade  Comment
 
 " mbbill/undotree
 let g:undotree_WindowLayout = 2
-
-" fatih/vim-go
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_types = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
 
 " hinshun/fzf.vim
 let FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
@@ -460,3 +375,25 @@ command! Plugs call fzf#run({
   \ 'options': '--delimiter / --nth -1',
   \ 'down':    '~40%',
   \ 'sink':    'Explore'})
+
+" Shougo/deoplete.nvim
+let g:deoplete#enable_at_startup = 1
+
+" LanguageClient
+let g:LanguageClient_completionPreferTextEdit = 1
+let g:LanguageClient_rootMarkers = {
+  \ 'go': ['go.mod'],
+  \ 'python': ['setup.py'],
+  \ 'rust': ['Cargo.toml'],
+  \ 'javascript': ['project.json'],
+  \ 'dockerfile': ['Dockerfile'],
+  \ }
+let g:LanguageClient_serverCommands = {
+  \ 'go': ['bingo', '-diagnostics-style', 'none'],
+  \ 'python': ['pyls'],
+  \ 'rust': ['rustup', 'run', 'stable', 'rls'],
+  \ 'javascript': ['javascript-typescript-stdio'],
+  \ 'dockerfile': ['docker-langserver', '--stdio'],
+  \ 'sh': ['bash-language-server', 'start'],
+  \ 'yaml': ['yaml-language-server', '--stdio'],
+  \ }
