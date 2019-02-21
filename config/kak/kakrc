@@ -1,0 +1,174 @@
+# Plugins
+# ───────
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+
+plug "andreyorst/plug.kak" noload
+
+plug "andreyorst/fzf.kak" config %{
+    # Use ripgrep for fzf file searching.
+    set-option global fzf_file_command 'rg -L --hidden --files --no-messages'
+}
+
+plug "danr/kakoune-easymotion"
+
+plug "ul/kak-lsp" do %{
+    build --release --locked
+    cargo install --force
+} config %{
+    # Anchor hover info box next to symbol.
+    set global lsp_hover_anchor true
+
+    # Enable LSP for following filetypes.
+    hook global WinSetOption filetype=(rust|javascript|python|go|bash) %{
+        lsp-enable-window
+    }
+
+    # Shutdown LSP servers on kakoune exit.
+    hook global KakEnd .* lsp-exit
+}
+
+# Kakoune
+# ───────
+
+# Disable clippy.
+set global ui_options ncurses_assistant=none
+
+# Use ripgrep for grep.
+set global grepcmd 'rg --column'
+
+# Soft wrap lines.
+addhl global/ wrap
+
+hook global WinCreate ^[^*]+$ %{
+    # Display line numbers.
+    add-highlighter window/ number-lines
+
+    # Show git-gutter if available.
+    git show-diff
+}
+
+# <a-,>: Escape.
+map global insert '<a-,>' '<esc>'
+
+# Comment
+# ───────
+
+# #: Comment lines in selection.
+map global normal '#' ': comment-line<ret>'
+
+# User
+# ────
+
+# ,n: Create new window.
+map -docstring 'new window' global user n ': new<ret>'
+
+# ,h: Show hover info of symbol under cursor.
+map -docstring 'hover info for symbol' global user h ': lsp-hover<ret>'
+
+# ,y: Yank to system clipboard.
+map -docstring "yank xsel" global user y ': yank-xsel<ret>'
+
+define-command -hidden yank-xsel %{
+    nop %sh{ (printf %s "$kak_selection" | xsel --input --clipboard) }
+}
+
+# ,P: Paste before line from system clipboard.
+map -docstring 'paste xsel before' global user P '!xsel --output --clipboard<ret>'
+
+# ,p: Paste after line from system clipboard.
+map -docstring 'paste xsel after' global user p '<a-!>xsel --output --clipboard<ret>'
+
+# Goto
+# ────
+
+# gd: Goto definition of symbol under cursor.
+map -docstring 'definition' global goto d '<esc>: lsp-definition<ret>'
+
+# gr: Goto references of symbol under cursor.
+map -docstring 'references' global goto r '<esc>: lsp-references<ret>'
+
+# gs: Goto symbols in document.
+map -docstring 'symbols' global goto s '<esc>: lsp-document-symbol<ret>'
+
+# gf: Goto file in workspace.
+map -docstring 'file' global goto f '<esc>: fzf-file<ret>'
+
+# Workspace
+# ─────────
+
+declare-user-mode workspace
+
+# gw: Enter workspace user mode.
+map -docstring 'workspace' global goto w '<esc>: enter-user-mode workspace<ret>'
+
+# gwl: Search for string by literal query in workspace.
+map -docstring 'literal' global workspace l '<esc>: grep -F<space>'
+
+# gwg: Search for string by regexp query in workspace.
+map -docstring 'regexp' global workspace r '<esc>: grep<space>'
+
+# gws: Search for symbols in workspace.
+map -docstring 'symbols' global workspace s '<esc>: lsp-workspace-symbol-incr<ret>'
+
+# gwe: Search for errors in workspace.
+map -docstring 'errors' global workspace e '<esc>: lsp-find-error<ret>'
+
+# Next
+# ────
+
+declare-user-mode next
+
+# gn: Enter next user mode.
+map -docstring 'next' global goto n '<esc>: enter-user-mode next<ret>'
+
+# gng: Goto next grep match
+map -docstring '*grep*' global next g '<esc>: grep-next-match<ret>'
+
+# gns: Goto next symbol match
+map -docstring '*symbol*' global next s '<esc>: lsp-symbols-next-match<ret>'
+
+# gnr: Goto next reference match
+map -docstring '*reference*' global next r '<esc>: lsp-references-next-match<ret>'
+
+# gne: Goto next error match
+map -docstring '*error*' global next e '<esc>: lsp-find-error<ret>'
+
+# Previous
+# ────────
+
+declare-user-mode prev
+
+# gp: Enter prev user mode.
+map -docstring 'prev' global goto p '<esc>: enter-user-mode prev<ret>'
+
+# gpg: Goto prev grep match
+map -docstring '*grep*' global prev g '<esc>: grep-previous-match<ret>'
+
+# gps: Goto previous symbol match
+map -docstring '*symbol*' global prev s '<esc>: lsp-symbols-previous-match<ret>'
+
+# gpr: Goto previous reference match
+map -docstring '*reference*' global prev r '<esc>: lsp-references-previous-match<ret>'
+
+# gpe: Goto previous error match
+map -docstring '*error*' global prev e '<esc>: lsp-find-error --previous<ret>'
+
+# Git
+# ───
+
+declare-user-mode git
+
+# <a-g>: Enter git user mode.
+map global normal <a-g> ': enter-user-mode<space>git<ret>'
+
+# <a-g>s: Show git status.
+map -docstring 'status' global git s ': git status<ret>'
+
+# <a-g>b: Show git blame.
+map -docstring 'blame' global git b ': git blame<ret>'
+
+# Easymotion
+# ──────────
+
+# ': Enter easymotion user mode.
+map global normal <'> ': enter-user-mode easymotion<ret>'
