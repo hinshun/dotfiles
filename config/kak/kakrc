@@ -1,16 +1,23 @@
 # Plugins
 # ───────
+
+
+# Use plug.kak as plugin manager.
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
+# Avoid loading plug.kak in plug.kak.
 plug "andreyorst/plug.kak" noload
 
+# FZF helpers.
 plug "andreyorst/fzf.kak" config %{
     # Use ripgrep for fzf file searching.
     set-option global fzf_file_command 'rg -L --hidden --files --no-messages'
 }
 
-plug "danr/kakoune-easymotion"
+# Git helpers.
+plug "hinshun/git.kak"
 
+# LSP support.
 plug "ul/kak-lsp" do %{
     build --release --locked
     cargo install --force
@@ -27,6 +34,36 @@ plug "ul/kak-lsp" do %{
     hook global KakEnd .* lsp-exit
 }
 
+# Work on selections one by one.
+plug "occivink/kakoune-phantom-selection"
+
+# Code snippets.
+plug "occivink/kakoune-snippets" config %{
+    set-option -add global snippets_directories "%opt{plug_install_dir}/kakoune-snippet-collection/snippets"
+    set-option global snippets_auto_expand false
+    map global insert '<tab>' "<esc>: snippets-expand-or-jump 'tab'<ret>"
+    map global normal '<tab>' ": snippets-expand-or-jump 'tab'<ret>"
+
+    define-command snippets-expand-or-jump -params 1 %{
+        execute-keys <backspace>
+        try %{
+            snippets-expand-trigger %{
+                set-register / "%opt{snippets_triggers_regex}\z"
+                execute-keys 'hGhs<ret>'
+            }
+        } catch %{
+            snippets-select-next-placeholders
+        } catch %sh{
+            printf "%s\n" "execute-keys -with-hooks <$1>"
+        } catch %{
+            nop
+        }
+    }
+}
+
+# Reasonable library of code snippets.
+plug "andreyorst/kakoune-snippet-collection"
+
 # Kakoune
 # ───────
 
@@ -39,6 +76,12 @@ set global grepcmd 'rg --column'
 # Soft wrap lines.
 addhl global/ wrap
 
+# Keep space around cursor.
+set-option global scrolloff 5,5
+
+# Autoreload buffers when external modifications is detected.
+set-option global autoreload yes
+
 hook global WinCreate ^[^*]+$ %{
     # Display line numbers.
     add-highlighter window/ number-lines
@@ -47,8 +90,20 @@ hook global WinCreate ^[^*]+$ %{
     git show-diff
 }
 
+hook global BufWritePost ^[^*]+$ %{
+    # Show git-gutter if available.
+    git show-diff
+}
+
 # <a-,>: Escape.
 map global insert '<a-,>' '<esc>'
+
+# Language-specific
+#
+
+hook global WinSetOption filetype=go %{
+  set-option window indentwidth 0
+}
 
 # Comment
 # ───────
@@ -78,6 +133,9 @@ map -docstring 'paste xsel before' global user P '!xsel --output --clipboard<ret
 # ,p: Paste after line from system clipboard.
 map -docstring 'paste xsel after' global user p '<a-!>xsel --output --clipboard<ret>'
 
+# ,s: Show snippets for current window
+map -docstring "show snippets" global user s ': snippets-info<ret>'
+
 # Goto
 # ────
 
@@ -91,7 +149,7 @@ map -docstring 'references' global goto r '<esc>: lsp-references<ret>'
 map -docstring 'symbols' global goto s '<esc>: lsp-document-symbol<ret>'
 
 # gf: Goto file in workspace.
-map -docstring 'file' global goto f '<esc>: fzf-file<ret>'
+map -docstring 'file' global goto f '<esc>: fzf-mode<ret>f<ret>'
 
 # Workspace
 # ─────────
@@ -133,6 +191,9 @@ map -docstring '*reference*' global next r '<esc>: lsp-references-next-match<ret
 # gne: Goto next error match
 map -docstring '*error*' global next e '<esc>: lsp-find-error<ret>'
 
+# gnc: Goto next conflicts match
+map -docstring '*conflicts*' global next c '<esc>: git-conflicts-next-match<ret>'
+
 # Previous
 # ────────
 
@@ -153,6 +214,9 @@ map -docstring '*reference*' global prev r '<esc>: lsp-references-previous-match
 # gpe: Goto previous error match
 map -docstring '*error*' global prev e '<esc>: lsp-find-error --previous<ret>'
 
+# gpc: Goto previous conflicts match
+map -docstring '*conflicts*' global prev c '<esc>: git-conflicts-previous-match<ret>'
+
 # Git
 # ───
 
@@ -167,8 +231,5 @@ map -docstring 'status' global git s ': git status<ret>'
 # <a-g>b: Show git blame.
 map -docstring 'blame' global git b ': git blame<ret>'
 
-# Easymotion
-# ──────────
-
-# ': Enter easymotion user mode.
-map global normal <'> ': enter-user-mode easymotion<ret>'
+# <a-g>c: Show git conflicts.
+map -docstring 'conflicts' global git c ': git-show-conflicts<ret>'

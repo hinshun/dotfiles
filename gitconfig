@@ -2,7 +2,7 @@
   name = Edgar Lee
   email = edgarl@netflix.com
 [core]
-  editor = nvim
+  editor = kak
   autocrlf = input
   excludesfile = /home/.gitignore
   pager = less

@@ -25,7 +25,9 @@ high-alt = #0c2b41
 margin-top = 5
 margin-bottom = 5
 margin-left = 100
+
 [bar/main]
+# monitor = ${env:MONITOR:DP-1}
 width = 100%
 height = 20
 offset-x = 0%
