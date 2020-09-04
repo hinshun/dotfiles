@@ -24,10 +24,35 @@ command = "pyls"
 [language.go]
 filetypes = ["go"]
 roots = ["Gopkg.toml", "go.mod", ".git", ".hg"]
-command = "bingo"
+command = "gopls"
+args = ["serve"]
 
 [language.bash]
 filetypes = ["sh"]
 roots = [".git", ".hg"]
 command = "bash-language-server"
 args = ["start"]
+
+[language.hlb]
+filetypes = ["hlb"]
+roots = [".git", ".hg"]
+command = "hlb"
+args = ["langserver"]
+offset_encoding = "utf-8"
+
+[semantic_scopes]
+# Map textmate scopes to kakoune faces for semantic highlighting
+# the underscores are translated to dots, and indicate nesting.
+# That is, if variable_other_field is omitted, it will try the face for
+# variable_other and then variable
+#
+# To see a list of available scopes in the debug buffer, run lsp-semantic-available-scopes
+string="string"
+constant="value"
+variable="variable"
+keyword="keyword"
+storage_modifier="type"
+storage_type="type"
+entity_name_function="function"
+entity_name_namespace="module"
+comment="comment"

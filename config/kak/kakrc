@@ -26,43 +26,17 @@ plug "ul/kak-lsp" do %{
     set global lsp_hover_anchor true
 
     # Enable LSP for following filetypes.
-    hook global WinSetOption filetype=(rust|javascript|python|go|bash) %{
+    hook global WinSetOption filetype=(rust|javascript|python|go|bash|hlb) %{
         lsp-enable-window
     }
 
     # Shutdown LSP servers on kakoune exit.
     hook global KakEnd .* lsp-exit
+
+    set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
 }
 
-# Work on selections one by one.
-plug "occivink/kakoune-phantom-selection"
-
-# Code snippets.
-plug "occivink/kakoune-snippets" config %{
-    set-option -add global snippets_directories "%opt{plug_install_dir}/kakoune-snippet-collection/snippets"
-    set-option global snippets_auto_expand false
-    map global insert '<tab>' "<esc>: snippets-expand-or-jump 'tab'<ret>"
-    map global normal '<tab>' ": snippets-expand-or-jump 'tab'<ret>"
-
-    define-command snippets-expand-or-jump -params 1 %{
-        execute-keys <backspace>
-        try %{
-            snippets-expand-trigger %{
-                set-register / "%opt{snippets_triggers_regex}\z"
-                execute-keys 'hGhs<ret>'
-            }
-        } catch %{
-            snippets-select-next-placeholders
-        } catch %sh{
-            printf "%s\n" "execute-keys -with-hooks <$1>"
-        } catch %{
-            nop
-        }
-    }
-}
-
-# Reasonable library of code snippets.
-plug "andreyorst/kakoune-snippet-collection"
+plug "ABuffSeagull/kakoune-vue"
 
 # Kakoune
 # ───────
@@ -102,8 +76,27 @@ map global insert '<a-,>' '<esc>'
 #
 
 hook global WinSetOption filetype=go %{
-  set-option window indentwidth 0
+    set-option window indentwidth 0
 }
+
+hook global BufCreate .*[.](tf) %{
+    set-option buffer filetype terraform
+}
+
+hook global WinSetOption filetype=(terraform|vue) %{
+    set-option window tabstop 2
+    set-option window indentwidth 2
+}
+
+hook global BufCreate .*[.](hlb) %{
+    set-option buffer filetype hlb
+}
+
+# Colorscheme
+# ───────────
+
+set-face global MenuBackground rgb:abb2c0,rgb:21252a
+set-face global Information rgb:abb2c0,rgb:21252a
 
 # Comment
 # ───────
