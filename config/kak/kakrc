@@ -1,7 +1,6 @@
 # Plugins
 # ───────
 
-
 # Use plug.kak as plugin manager.
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
@@ -10,30 +9,65 @@ plug "andreyorst/plug.kak" noload
 
 # FZF helpers.
 plug "andreyorst/fzf.kak" config %{
-    # Use ripgrep for fzf file searching.
-    set-option global fzf_file_command 'rg -L --hidden --files --no-messages'
+    # fzf.kak configuration
+} defer fzf %{
+    set-option global fzf_preview_width '65%'
+    set-option global fzf_highlight_command bat
+} defer fzf-file %{
+    declare-option str-list fzf_exclude_files "*.o" "*.bin" "*.obj" ".*cleanfiles"
+    declare-option str-list fzf_exclude_dirs ".git" ".svn"
+    set-option global fzf_file_command %sh{
+        eval "set -- ${kak_quoted_opt_fzf_exclude_files:-} ${kak_quoted_opt_fzf_exclude_dirs:-}"
+        while [ $# -gt 0 ]; do
+            exclude="$exclude --exclude '$1'"
+            shift
+        done
+        cmd="fd . --no-ignore --type f --follow --hidden $exclude"
+        echo "$cmd"
+    }
 }
 
 # Git helpers.
 plug "hinshun/git.kak"
 
 # LSP support.
-plug "ul/kak-lsp" do %{
-    build --release --locked
-    cargo install --force
+plug "kak-lsp/kak-lsp" do %{
+    cargo build --release --locked
+    cargo install --force --path .
 } config %{
-    # Anchor hover info box next to symbol.
-    set global lsp_hover_anchor true
+    # uncomment to enable debugging
+    # eval %sh{echo ${kak_opt_lsp_cmd} >> /tmp/kak-lsp.log}
+    # set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
 
-    # Enable LSP for following filetypes.
-    hook global WinSetOption filetype=(rust|javascript|python|go|bash|hlb) %{
+    set global lsp_diagnostic_line_error_sign '║'
+    set global lsp_diagnostic_line_warning_sign '┊'
+
+    # define-command ne -docstring 'go to next error/warning from lsp' %{ lsp-find-error --include-warnings }
+    # define-command pe -docstring 'go to previous error/warning from lsp' %{ lsp-find-error --previous --include-warnings }
+    # define-command ee -docstring 'go to current error/warning from lsp' %{ lsp-find-error --include-warnings; lsp-find-error --previous --include-warnings }
+
+    define-command lsp-restart -docstring 'restart lsp server' %{ lsp-stop; lsp-start }
+    hook global WinSetOption filetype=(c|cpp|cc|rust|javascript|typescript) %{
+        set-option window lsp_auto_highlight_references true
+        set-option window lsp_hover_anchor false
+        lsp-auto-hover-enable
+        echo -debug "Enabling LSP for filtetype %opt{filetype}"
         lsp-enable-window
     }
 
-    # Shutdown LSP servers on kakoune exit.
-    hook global KakEnd .* lsp-exit
+    hook global WinSetOption filetype=(rust) %{
+        set window lsp_server_configuration rust.clippy_preference="on"
+    }
 
-    set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
+    hook global WinSetOption filetype=rust %{
+        hook window BufWritePre .* %{
+            evaluate-commands %sh{
+                test -f rustfmt.toml && printf lsp-formatting-sync
+            }
+        }
+    }
+
+    hook global KakEnd .* lsp-exit
 }
 
 plug "ABuffSeagull/kakoune-vue"
@@ -42,7 +76,7 @@ plug "ABuffSeagull/kakoune-vue"
 # ───────
 
 # Disable clippy.
-set global ui_options ncurses_assistant=none
+set-option -add global ui_options terminal_assistant=none
 
 # Use ripgrep for grep.
 set global grepcmd 'rg --column'
@@ -118,17 +152,13 @@ map -docstring 'new window' global user n ': new<ret>'
 map -docstring 'hover info for symbol' global user h ': lsp-hover<ret>'
 
 # ,y: Yank to system clipboard.
-map -docstring "yank xsel" global user y ': yank-xsel<ret>'
-
-define-command -hidden yank-xsel %{
-    nop %sh{ (printf %s "$kak_selection" | xsel --input --clipboard) }
-}
+map -docstring "yank" global user y '<a-|>wl-copy<ret>'
 
 # ,P: Paste before line from system clipboard.
-map -docstring 'paste xsel before' global user P '!xsel --output --clipboard<ret>'
+map -docstring 'paste before' global user P '!wl-paste -n<ret>'
 
 # ,p: Paste after line from system clipboard.
-map -docstring 'paste xsel after' global user p '<a-!>xsel --output --clipboard<ret>'
+map -docstring 'paste after' global user p '<a-!>wl-paste -n<ret>'
 
 # ,s: Show snippets for current window
 map -docstring "show snippets" global user s ': snippets-info<ret>'

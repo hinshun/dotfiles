@@ -31,6 +31,9 @@ set $menu wofi --show=drun --lines=5 --prompt=""
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
+output eDP-1 scale 1
+output eDP-1 resolution 2256x1504 position 0,0
+
 ### Idle configuration
 #
 # Example configuration:
@@ -43,6 +46,9 @@ set $menu wofi --show=drun --lines=5 --prompt=""
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
+
+exec wl-paste -t text --watch clipman store
+exec wl-paste -p -t text --watch clipman store -P --histpath="~/.local/share/clipman-primary.json"
 
 ### Input configuration
 #
@@ -70,6 +76,8 @@ set $menu wofi --show=drun --lines=5 --prompt=""
 
     # Start your launcher
     bindsym $mod+d exec $menu
+
+    bindsym $mod+c exec clipman pick -t wofi
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -140,7 +148,7 @@ set $menu wofi --show=drun --lines=5 --prompt=""
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+b splith
+    bindsym $mod+Semicolon splith
     bindsym $mod+v splitv
 
     # Switch the current container between different layout styles
@@ -179,16 +187,16 @@ mode "resize" {
     # right will grow the containers width
     # up will shrink the containers height
     # down will grow the containers height
-    bindsym $left resize shrink width 10px
+    bindsym $left resize grow width 10px
     bindsym $down resize grow height 10px
     bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
+    bindsym $right resize shrink width 10px
 
     # Ditto, with arrow keys
-    bindsym Left resize shrink width 10px
+    bindsym Left resize grow width 10px
     bindsym Down resize grow height 10px
     bindsym Up resize shrink height 10px
-    bindsym Right resize grow width 10px
+    bindsym Right resize shrink width 10px
 
     # Return to default mode
     bindsym Return mode "default"
@@ -196,12 +204,19 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
+default_border pixel
+default_floating_border pixel
+
 #
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
     swaybar_command waybar
+}
+
+input 1:1:AT_Translated_Set_2_keyboard {
+    xkb_options caps:ctrl_modifier
 }
 
 include @sysconfdir@/sway/config.d/*

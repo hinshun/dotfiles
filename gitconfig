@@ -5,7 +5,15 @@
   editor = kak
   autocrlf = input
   excludesfile = /home/.gitignore
-  pager = less
+  pager = delta
+[interactive]
+  diffFilter = delta --color-only
+[delta]
+  navigate = true
+[merge]
+  conflictstyle = diff3
+[diff]
+  colorMoved = default
 [push]
   default = simple
 [url "git@github.com:"]
