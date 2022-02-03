@@ -24,8 +24,7 @@ command = "pyls"
 [language.go]
 filetypes = ["go"]
 roots = ["Gopkg.toml", "go.mod", ".git", ".hg"]
-command = "gopls"
-args = ["serve"]
+command = "bingo"
 
 [language.bash]
 filetypes = ["sh"]

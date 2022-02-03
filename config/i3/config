@@ -151,6 +151,9 @@ exec_always feh --bg-scale /usr/share/backgrounds/wallpaper.jpg
 # Start polybar
 exec_always --no-startup-id killall polybar; polybar main -c "/home/edgarl/.config/polybar/config"
 
+# Start polkit auth agent
+# exec --no-startup-id lxpolkit
+
 # Define i3 pane colors
 client.focused          #282c34 #abb2c0 #282c34 #abb2c0
 client.focused_inactive #282c34 #282c34 #282c34 #282c34

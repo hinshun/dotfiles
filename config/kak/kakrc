@@ -92,6 +92,10 @@ hook global BufCreate .*[.](hlb) %{
     set-option buffer filetype hlb
 }
 
+hook global BufCreate .*[.](svelte) %{
+    set-option buffer filetype html
+}
+
 # Colorscheme
 # ───────────
 
