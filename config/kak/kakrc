@@ -1,6 +1,11 @@
 # Plugins
 # ───────
 
+source "%val{config}/utils.kak"
+
+# Load private plugins.
+source-dir "%val{config}/private"
+
 # Use plug.kak as plugin manager.
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
@@ -11,24 +16,21 @@ plug "andreyorst/plug.kak" noload
 plug "andreyorst/fzf.kak" config %{
     # fzf.kak configuration
 } defer fzf %{
+    set-option global fzf_highlight_command 'bat'
     set-option global fzf_preview_width '65%'
-    set-option global fzf_highlight_command bat
+    set-option global fzf_tmux_popup true
 } defer fzf-file %{
-    declare-option str-list fzf_exclude_files "*.o" "*.bin" "*.obj" ".*cleanfiles"
-    declare-option str-list fzf_exclude_dirs ".git" ".svn"
-    set-option global fzf_file_command %sh{
-        eval "set -- ${kak_quoted_opt_fzf_exclude_files:-} ${kak_quoted_opt_fzf_exclude_dirs:-}"
-        while [ $# -gt 0 ]; do
-            exclude="$exclude --exclude '$1'"
-            shift
-        done
-        cmd="fd . --no-ignore --type f --follow --hidden $exclude"
-        echo "$cmd"
-    }
+    set-option global fzf_file_command 'rg -L --hidden --files --glob=!.git/'
 }
 
-# Git helpers.
-plug "hinshun/git.kak"
+plug "andreyorst/smarttab.kak" config %{
+    # these languages will use `expandtab' behavior
+    hook global WinSetOption filetype=(rust|python|markdown|kak|lisp|scheme|sh|perl|zsh|groovy|nix|yaml) expandtab
+    # these languages will use `noexpandtab' behavior
+    hook global WinSetOption filetype=(makefile|gas) noexpandtab
+    # these languages will use `smarttab' behavior
+    hook global WinSetOption filetype=(c|cpp) smarttab
+}
 
 # LSP support.
 plug "kak-lsp/kak-lsp" do %{
@@ -37,7 +39,7 @@ plug "kak-lsp/kak-lsp" do %{
 } config %{
     # uncomment to enable debugging
     # eval %sh{echo ${kak_opt_lsp_cmd} >> /tmp/kak-lsp.log}
-    # set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
+    set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
 
     set global lsp_diagnostic_line_error_sign '║'
     set global lsp_diagnostic_line_warning_sign '┊'
@@ -48,18 +50,18 @@ plug "kak-lsp/kak-lsp" do %{
 
     define-command lsp-restart -docstring 'restart lsp server' %{ lsp-stop; lsp-start }
     hook global WinSetOption filetype=(c|cpp|cc|rust|javascript|typescript) %{
-        set-option window lsp_auto_highlight_references true
         set-option window lsp_hover_anchor false
-        lsp-auto-hover-enable
-        echo -debug "Enabling LSP for filtetype %opt{filetype}"
+        # lsp-auto-hover-enable
+        echo -debug "Enabling LSP for filetype %opt{filetype}"
         lsp-enable-window
     }
 
     hook global WinSetOption filetype=(rust) %{
-        set window lsp_server_configuration rust.clippy_preference="on"
     }
 
-    hook global WinSetOption filetype=rust %{
+    hook global WinSetOption filetype=(rust) %{
+        lsp-inlay-hints-enable global
+        set window lsp_server_configuration rust.clippy_preference="on"
         hook window BufWritePre .* %{
             evaluate-commands %sh{
                 test -f rustfmt.toml && printf lsp-formatting-sync
@@ -71,6 +73,7 @@ plug "kak-lsp/kak-lsp" do %{
 }
 
 plug "ABuffSeagull/kakoune-vue"
+
 
 # Kakoune
 # ───────
@@ -117,7 +120,7 @@ hook global BufCreate .*[.](tf) %{
     set-option buffer filetype terraform
 }
 
-hook global WinSetOption filetype=(terraform|vue) %{
+hook global WinSetOption filetype=(terraform|vue|nix|yaml) %{
     set-option window tabstop 2
     set-option window indentwidth 2
 }
@@ -133,6 +136,8 @@ hook global BufCreate .*[.](svelte) %{
 # Colorscheme
 # ───────────
 
+set-face global comment rgb:787878
+set-face global documentation rgb:787878
 set-face global MenuBackground rgb:abb2c0,rgb:21252a
 set-face global Information rgb:abb2c0,rgb:21252a
 
@@ -145,23 +150,38 @@ map global normal '#' ': comment-line<ret>'
 # User
 # ────
 
-# ,n: Create new window.
+# <space>n: Create new window.
 map -docstring 'new window' global user n ': new<ret>'
 
-# ,h: Show hover info of symbol under cursor.
+# <space>h: Show hover info of symbol under cursor.
 map -docstring 'hover info for symbol' global user h ': lsp-hover<ret>'
 
-# ,y: Yank to system clipboard.
-map -docstring "yank" global user y '<a-|>wl-copy<ret>'
+# <space>y: Yank to system clipboard.
+map -docstring "yank" global user y ': yank-system %val{selection}<ret>'
+
+def yank-system -override -params 1.. %{
+    nop %sh{
+        encoded=$(printf %s "$1" | base64 | tr -d '\n')
+        printf "\e]52;;%s\e\\" "$encoded" >/dev/tty
+    }
+}
+
+# map -docstring "yank" global user y '<a-|>clipboard<ret>'
+
+# Yank always overrides system clipboard
+# hook global RegisterModified '"' %{ nop %sh{
+# 	encoded=$(printf %s "$kak_main_reg_dquote" | base64 | tr -d '\n')
+#         printf "\e]52;;%s\e\\" "$encoded" >/dev/tty
+# }}
 
 # ,P: Paste before line from system clipboard.
-map -docstring 'paste before' global user P '!wl-paste -n<ret>'
+# map -docstring 'paste before' global user P '!wl-paste -n<ret>'
 
 # ,p: Paste after line from system clipboard.
-map -docstring 'paste after' global user p '<a-!>wl-paste -n<ret>'
+# map -docstring 'paste after' global user p '<a-!>wl-paste -n<ret>'
 
 # ,s: Show snippets for current window
-map -docstring "show snippets" global user s ': snippets-info<ret>'
+# map -docstring "show snippets" global user s ': snippets-info<ret>'
 
 # Goto
 # ────
@@ -206,17 +226,20 @@ declare-user-mode next
 # gn: Enter next user mode.
 map -docstring 'next' global goto n '<esc>: enter-user-mode next<ret>'
 
+# gns: Goto next symbol
+map -docstring 'symbol' global next s '<esc>: lsp-next-symbol<ret>'
+
+# gnf: Goto next function
+map -docstring 'function' global next f '<esc>: lsp-next-function<ret>'
+
+# gne: Goto next error match
+map -docstring 'error' global next e '<esc>: lsp-find-error<ret>'
+
 # gng: Goto next grep match
 map -docstring '*grep*' global next g '<esc>: grep-next-match<ret>'
 
-# gns: Goto next symbol match
-map -docstring '*symbol*' global next s '<esc>: lsp-symbols-next-match<ret>'
-
-# gnr: Goto next reference match
-map -docstring '*reference*' global next r '<esc>: lsp-references-next-match<ret>'
-
-# gne: Goto next error match
-map -docstring '*error*' global next e '<esc>: lsp-find-error<ret>'
+# gnl: Goto next lsp-goto match
+map -docstring '*goto*' global next l '<esc>: lsp-next-location *goto*<ret>'
 
 # gnc: Goto next conflicts match
 map -docstring '*conflicts*' global next c '<esc>: git-conflicts-next-match<ret>'
@@ -229,17 +252,20 @@ declare-user-mode prev
 # gp: Enter prev user mode.
 map -docstring 'prev' global goto p '<esc>: enter-user-mode prev<ret>'
 
+# gps: Goto previous symbol
+map -docstring 'symbol' global prev s '<esc>: lsp-previous-symbol<ret>'
+
+# gpf: Goto previous function
+map -docstring 'function' global prev f '<esc>: lsp-previous-function<ret>'
+
+# gpe: Goto previous error match
+map -docstring 'error' global prev e '<esc>: lsp-find-error --previous<ret>'
+
 # gpg: Goto prev grep match
 map -docstring '*grep*' global prev g '<esc>: grep-previous-match<ret>'
 
-# gps: Goto previous symbol match
-map -docstring '*symbol*' global prev s '<esc>: lsp-symbols-previous-match<ret>'
-
-# gpr: Goto previous reference match
-map -docstring '*reference*' global prev r '<esc>: lsp-references-previous-match<ret>'
-
-# gpe: Goto previous error match
-map -docstring '*error*' global prev e '<esc>: lsp-find-error --previous<ret>'
+# gpl: Goto previous lsp-goto match
+map -docstring '*goto*' global prev l '<esc>: lsp-previous-location *goto*<ret>'
 
 # gpc: Goto previous conflicts match
 map -docstring '*conflicts*' global prev c '<esc>: git-conflicts-previous-match<ret>'
@@ -255,8 +281,13 @@ map global normal <a-g> ': enter-user-mode<space>git<ret>'
 # <a-g>s: Show git status.
 map -docstring 'status' global git s ': git status<ret>'
 
-# <a-g>b: Show git blame.
-map -docstring 'blame' global git b ': git blame<ret>'
-
 # <a-g>c: Show git conflicts.
 map -docstring 'conflicts' global git c ': git-show-conflicts<ret>'
+
+# <a-g>b: Show git blame.
+map -docstring 'blame' global git b ': tig-blame<ret>'
+
+def tig-blame -override -docstring 'Open blame in tig for current file and line' %{
+    # Note here we aren't passing any command on resume of kakoune
+    terminal zsh -c "tig blame +%val{cursor_line} %val{buffile}" 
+}

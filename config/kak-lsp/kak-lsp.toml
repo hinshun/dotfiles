@@ -6,41 +6,10 @@ verbosity = 2
 # set to 0 to disable
 timeout = 1800 # seconds = 30 minutes
 
-
-[language.rust]
-filetypes = ["rust"]
-roots = ["Cargo.toml"]
-command = "sh"
-args = [
-    "-c",
-    """
-        if path=$(rustup which rust-analyzer 2>/dev/null); then
-            "$path"
-        else
-            rust-analyzer
-        fi
-    """,
-]
-settings_section = "rust-analyzer"
-[language.rust.settings.rust-analyzer]
-# See https://rust-analyzer.github.io/manual.html#configuration
-hoverActions.enable = false # kak-lsp doesn't support this at the moment
-# cargo.features = []
-
-[language.typescript]
-filetypes = ["typescript"]
-roots = ["package.json", "tsconfig.json", ".git", ".hg"]
-command = "typescript-language-server"
-args = ["--stdio"]
-
-[language.python]
-filetypes = ["python"]
-roots = ["requirements.txt", "setup.py", ".git", ".hg"]
-command = "pylsp"
-settings_section = "_"
-[language.python.settings._]
-# See https://github.com/python-lsp/python-lsp-server#configuration
-# pylsp.configurationSources = ["flake8"]
+[language.c_cpp]
+filetypes = ["c", "cpp"]
+roots = ["compile_commands.json", ".clangd", ".git", ".hg"]
+command = "clangd"
 
 [language.go]
 filetypes = ["go"]
@@ -58,6 +27,31 @@ command = "hlb"
 args = ["langserver"]
 offset_encoding = "utf-8"
 
+[language.python]
+filetypes = ["python"]
+roots = ["requirements.txt", "setup.py", ".git", ".hg"]
+command = "pyls"
+settings_section = "_"
+[language.python.settings._]
+# See https://github.com/python-lsp/python-lsp-server#configuration
+# pylsp.configurationSources = ["flake8"]
+
+[language.rust]
+filetypes = ["rust"]
+roots = ["Cargo.toml"]
+command = "rust-analyzer"
+settings_section = "rust-analyzer"
+[language.rust.settings.rust-analyzer]
+# See https://rust-analyzer.github.io/manual.html#configuration
+hoverActions.enable = false # kak-lsp doesn't support this at the moment
+# cargo.features = []
+
+[language.typescript]
+filetypes = ["typescript"]
+roots = ["package.json", "tsconfig.json", ".git", ".hg"]
+command = "typescript-language-server"
+args = ["--stdio"]
+
 [semantic_scopes]
 # Map textmate scopes to kakoune faces for semantic highlighting
 # the underscores are translated to dots, and indicate nesting.
@@ -74,3 +68,4 @@ storage_type="type"
 entity_name_function="function"
 entity_name_namespace="module"
 comment="comment"
+

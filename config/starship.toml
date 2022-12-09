@@ -1,0 +1,44 @@
+format = """
+$hostname\
+$directory\
+$git_branch\
+$git_commit\
+$git_status\
+$line_break\
+$character"""
+
+right_format = """
+$custom\
+$cmd_duration
+"""
+
+[hostname]
+style = "bold blue"
+
+[directory]
+read_only = " "
+truncate_to_repo = false
+truncation_length = 0
+
+[git_branch]
+symbol = " "
+
+[git_status]
+ahead = "⇡${count}"
+diverged = "⇡${ahead_count}⇣${behind_count}"
+behind = "⇣${count}"
+style = "grey"
+
+[character]
+success_symbol = "[ツ](green)"
+error_symbol = "[✗](red)"
+
+[custom.proxy]
+command = """ echo "$INTERNET_PROXY" """
+format = "\\[proxy [$output]($style)\\]"
+when = """ test "$HTTP_PROXY" """
+style = "yellow"
+
+[cmd_duration]
+min_time = 150
+format = " \\[took [$duration](white)\\]"
